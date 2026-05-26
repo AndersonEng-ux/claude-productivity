@@ -150,10 +150,32 @@
   <h3>Entry Detail</h3>
   <table>
     <thead>
-      <tr><th>Date</th><th>Entry</th><th>Actual</th><th>Category</th><th>Human Equiv</th><th>Multiplier</th></tr>
+      <tr><th>Date</th><th>Entry</th><th>Actual</th><th>Category</th><th>Human Equiv</th><th>Multiplier</th><th>Evidence Source</th></tr>
     </thead>
     <tbody id="detailTable"></tbody>
   </table>
+</div>
+
+<div class="chart-card" style="margin-top:1.5rem;">
+  <h3>Methodology & Data Sources</h3>
+  <div style="font-size:0.85rem;color:var(--muted);line-height:1.7;">
+    <p style="margin-bottom:1rem;">Each entry represents a <strong style="color:var(--text);">named deliverable</strong> produced with Claude assistance. Entries without a tangible output (meetings, phone calls, email routing) are excluded. Multipliers are calculated from three independent evidence layers:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
+      <div style="background:var(--bg);border-radius:8px;padding:1rem;">
+        <div style="color:var(--accent);font-weight:600;margin-bottom:0.5rem;">Layer 1 — Internal Baseline</div>
+        <div>QuickBooks Time (TSheets) entries from 2024, pre-Claude. Matched by jobcode + keyword similarity to establish Brandon's historical duration for comparable tasks. Weighted 2x when available.</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:1rem;">
+        <div style="color:var(--green);font-weight:600;margin-bottom:0.5rem;">Layer 2 — AEC Industry Benchmarks</div>
+        <div>PSMJ Resources (pursuit time studies), Deltek Clarity Report (utilization benchmarks), SMPS Foundation (proposal/SOQ time surveys), ACEC benchmarks, RSMeans labor data, ENR productivity indices.</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:1rem;">
+        <div style="color:var(--amber);font-weight:600;margin-bottom:0.5rem;">Layer 3 — Published AI Research</div>
+        <div>Harvard/BCG (40% faster analytical tasks, Nov 2023), MIT/Stanford (37% faster professional writing), GitHub/Microsoft (55% faster coding with Copilot), McKinsey (25-50% dev productivity), NBER (14% support productivity), Anthropic SWE-bench (2x coding tasks).</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem;font-size:0.8rem;color:#64748b;">Human-equivalent hours = weighted average of internal baseline (2x weight) + industry benchmark. When no internal baseline exists, industry + research benchmarks are used. Conservative estimates applied — multipliers represent the lower bound of the evidence range.</p>
+  </div>
 </div>
 
 <div class="footer">
@@ -483,6 +505,7 @@ if (withMultiplier.length > 0) {
 const tbody = document.getElementById('detailTable');
 entries.forEach(e => {
   const mult = e.multiplier ? `<span class="multiplier-badge">${e.multiplier}x</span>` : '<span style="color:#64748b">pending</span>';
+  const evidence = e.evidence ? `<span style="color:#64748b;font-size:0.75rem;">${e.evidence}</span>` : '<span style="color:#64748b">--</span>';
   tbody.innerHTML += `<tr>
     <td>${e.date}</td>
     <td>${e.notes.substring(0, 60)}${e.notes.length > 60 ? '...' : ''}</td>
@@ -490,6 +513,7 @@ entries.forEach(e => {
     <td style="color:#94a3b8">${e.category.replace(/_/g, ' ')}</td>
     <td>${e.equiv ? e.equiv + 'h' : '--'}</td>
     <td>${mult}</td>
+    <td style="max-width:300px">${evidence}</td>
   </tr>`;
 });
 </script>
