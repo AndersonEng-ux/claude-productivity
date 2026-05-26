@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Productivity Dashboard — Anderson Psomas</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #818cf8;
+    --green: #34d399;
+    --amber: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 600; }
+  .header .updated { color: var(--muted); font-size: 0.85rem; }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .kpi .label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+  .kpi .value { font-size: 2rem; font-weight: 700; }
+  .kpi .value.accent { color: var(--accent); }
+  .kpi .value.green { color: var(--green); }
+  .kpi .value.amber { color: var(--amber); }
+  .kpi .sub { color: var(--muted); font-size: 0.8rem; margin-top: 0.25rem; }
+  .charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .chart-card h3 { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+  .table-card h3 { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; }
+  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  .multiplier-badge {
+    display: inline-block;
+    background: rgba(129,140,248,0.15);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 768px) {
+    .charts { grid-template-columns: 1fr; }
+    body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Claude Productivity Dashboard</h1>
+  <span class="updated" id="lastUpdated"></span>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="label">Overall Multiplier</div>
+    <div class="value accent" id="kpiMultiplier">--</div>
+    <div class="sub">human-equiv / actual</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Hours Saved</div>
+    <div class="value green" id="kpiSaved">--</div>
+    <div class="sub">cumulative</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Actual Hours</div>
+    <div class="value" id="kpiActual">--</div>
+    <div class="sub">with Claude</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Human Equiv Hours</div>
+    <div class="value amber" id="kpiEquiv">--</div>
+    <div class="sub">without Claude</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Entries Tracked</div>
+    <div class="value" id="kpiEntries">--</div>
+    <div class="sub">Claude-assisted</div>
+  </div>
+</div>
+
+<div class="charts">
+  <div class="chart-card">
+    <h3>Hours by Category</h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Actual vs Human-Equivalent</h3>
+    <canvas id="comparisonChart"></canvas>
+  </div>
+</div>
+
+<div class="table-card">
+  <h3>Entry Detail</h3>
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Entry</th><th>Actual</th><th>Category</th><th>Human Equiv</th><th>Multiplier</th></tr>
+    </thead>
+    <tbody id="detailTable"></tbody>
+  </table>
+</div>
+
+<div class="footer">
+  Anderson Psomas — Claude Productivity Tracker — Auto-updated by Time Harvest weekly review
+</div>
+
+<script>
+// ── DATA (replaced by Thursday review script) ──
+const DASHBOARD_DATA = {
+  updated: "2026-05-26",
+  entries: [
+    {"date":"2026-05-21","notes":"Septic design landing page audit, HubSpot form review, conversion updates","actual":1.5,"category":"analysis_audit","claude_min":60,"deliverable":"landing_page_audit","equiv":null,"multiplier":null,"evidence":""},
+    {"date":"2026-05-21","notes":"AECOM uranium SOQ finalization, KC resume coordination, website writeup","actual":1.5,"category":"content_generation","claude_min":75,"deliverable":"soq_document","equiv":null,"multiplier":null,"evidence":""},
+    {"date":"2026-05-21","notes":"Project follow ups — Massina, Western Zirconium, GrassPlus, Park City Phase II","actual":1.5,"category":"coordination_routing","claude_min":40,"deliverable":"task_management","equiv":null,"multiplier":null,"evidence":""},
+    {"date":"2026-05-21","notes":"Internal tool development — Phleet inspection app, API integrations","actual":1.0,"category":"automation_development","claude_min":80,"deliverable":"app_development","equiv":null,"multiplier":null,"evidence":""},
+    {"date":"2026-05-21","notes":"BD outreach target list, association research, DOGM listing update","actual":1.0,"category":"research_evaluation","claude_min":45,"deliverable":"market_research","equiv":null,"multiplier":null,"evidence":""},
+    {"date":"2026-05-21","notes":"Kevin Cosper master resume development and structure","actual":4.0,"category":"content_generation","claude_min":155,"deliverable":"resume_document","equiv":14,"multiplier":3.5,"evidence":"QB Time 2024: 12-16h for master resume build; SMPS: 16-24h avg for AEC firms; MIT: 37% faster on professional writing"}
+  ]
+};
+
+// ── RENDER ──
+const d = DASHBOARD_DATA;
+const entries = d.entries;
+const withMultiplier = entries.filter(e => e.multiplier);
+const totalActual = entries.reduce((s,e) => s + e.actual, 0);
+const totalEquiv = withMultiplier.reduce((s,e) => s + (e.equiv || 0), 0);
+const totalActualWithMult = withMultiplier.reduce((s,e) => s + e.actual, 0);
+const overallMult = totalActualWithMult > 0 ? (totalEquiv / totalActualWithMult).toFixed(1) : '--';
+
+document.getElementById('lastUpdated').textContent = 'Updated ' + d.updated;
+document.getElementById('kpiMultiplier').textContent = overallMult + 'x';
+document.getElementById('kpiSaved').textContent = (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
+document.getElementById('kpiActual').textContent = totalActual.toFixed(1) + 'h';
+document.getElementById('kpiEquiv').textContent = totalEquiv > 0 ? totalEquiv.toFixed(1) + 'h' : '--';
+document.getElementById('kpiEntries').textContent = entries.length;
+
+// Category chart
+const cats = {};
+entries.forEach(e => { cats[e.category] = (cats[e.category] || 0) + e.actual; });
+const catLabels = Object.keys(cats).map(c => c.replace(/_/g, ' '));
+const catColors = ['#818cf8','#34d399','#fbbf24','#f87171','#38bdf8','#a78bfa'];
+new Chart(document.getElementById('categoryChart'), {
+  type: 'doughnut',
+  data: {
+    labels: catLabels,
+    datasets: [{ data: Object.values(cats), backgroundColor: catColors, borderWidth: 0 }]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 12, font: { size: 11 } } } },
+    cutout: '60%'
+  }
+});
+
+// Comparison chart (only entries with multiplier data)
+if (withMultiplier.length > 0) {
+  const compLabels = withMultiplier.map(e => e.notes.substring(0, 30) + '...');
+  new Chart(document.getElementById('comparisonChart'), {
+    type: 'bar',
+    data: {
+      labels: compLabels,
+      datasets: [
+        { label: 'Actual Hours', data: withMultiplier.map(e => e.actual), backgroundColor: '#818cf8' },
+        { label: 'Human Equivalent', data: withMultiplier.map(e => e.equiv), backgroundColor: '#fbbf2466', borderColor: '#fbbf24', borderWidth: 1 }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { labels: { color: '#94a3b8' } } },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+} else {
+  document.getElementById('comparisonChart').parentElement.innerHTML += '<p style="color:#94a3b8;text-align:center;padding:2rem;">Multiplier data available after first Thursday review</p>';
+}
+
+// Detail table
+const tbody = document.getElementById('detailTable');
+entries.forEach(e => {
+  const mult = e.multiplier ? `<span class="multiplier-badge">${e.multiplier}x</span>` : '<span style="color:#64748b">pending</span>';
+  tbody.innerHTML += `<tr>
+    <td>${e.date}</td>
+    <td>${e.notes.substring(0, 60)}${e.notes.length > 60 ? '...' : ''}</td>
+    <td>${e.actual}h</td>
+    <td style="color:#94a3b8">${e.category.replace(/_/g, ' ')}</td>
+    <td>${e.equiv ? e.equiv + 'h' : '--'}</td>
+    <td>${mult}</td>
+  </tr>`;
+});
+</script>
+</body>
+</html>
