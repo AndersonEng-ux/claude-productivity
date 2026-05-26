@@ -165,13 +165,260 @@
 const DASHBOARD_DATA = {
   updated: "2026-05-26",
   entries: [
-    {"date":"2026-05-21","notes":"Septic design landing page audit, HubSpot form review, conversion updates","actual":1.5,"category":"analysis_audit","claude_min":60,"deliverable":"landing_page_audit","equiv":null,"multiplier":null,"evidence":""},
-    {"date":"2026-05-21","notes":"AECOM uranium SOQ finalization, KC resume coordination, website writeup","actual":1.5,"category":"content_generation","claude_min":75,"deliverable":"soq_document","equiv":null,"multiplier":null,"evidence":""},
-    {"date":"2026-05-21","notes":"Project follow ups — Massina, Western Zirconium, GrassPlus, Park City Phase II","actual":1.5,"category":"coordination_routing","claude_min":40,"deliverable":"task_management","equiv":null,"multiplier":null,"evidence":""},
-    {"date":"2026-05-21","notes":"Internal tool development — Phleet inspection app, API integrations","actual":1.0,"category":"automation_development","claude_min":80,"deliverable":"app_development","equiv":null,"multiplier":null,"evidence":""},
-    {"date":"2026-05-21","notes":"BD outreach target list, association research, DOGM listing update","actual":1.0,"category":"research_evaluation","claude_min":45,"deliverable":"market_research","equiv":null,"multiplier":null,"evidence":""},
-    {"date":"2026-05-21","notes":"Kevin Cosper master resume development and structure","actual":4.0,"category":"content_generation","claude_min":155,"deliverable":"resume_document","equiv":14,"multiplier":3.5,"evidence":"QB Time 2024: 12-16h for master resume build; SMPS: 16-24h avg for AEC firms; MIT: 37% faster on professional writing"}
-  ]
+    {
+        "date": "2026-05-14",
+        "notes": "Project summary writeups — uranium project descriptions",
+        "actual": 5.0,
+        "category": "content_generation",
+        "claude_min": 180,
+        "deliverable": "project_descriptions",
+        "equiv": 12.0,
+        "multiplier": 2.4,
+        "evidence": "QB Time 2024: 4-8h per set of project descriptions; SMPS: 8-16h for AEC project writeups; MIT: 37% faster on professional writing"
+    },
+    {
+        "date": "2026-05-15",
+        "notes": "AECOM Ambrosia Lake opportunity research and NDA prep",
+        "actual": 3.0,
+        "category": "content_generation",
+        "claude_min": 90,
+        "deliverable": "soq_nda_prep",
+        "equiv": 6.0,
+        "multiplier": 2.0,
+        "evidence": "QB Time 2024: no direct SOQ match; SMPS: 24h avg full SOQ; PSMJ: 16-40h for pursuit packages; scaled to prep stage"
+    },
+    {
+        "date": "2026-05-15",
+        "notes": "Environmental project write-ups — Bingham Creek, Barneys Canyon",
+        "actual": 0.5,
+        "category": "content_generation",
+        "claude_min": 30,
+        "deliverable": "env_descriptions",
+        "equiv": 2.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: no env baseline; SMPS: 4-8h per project description; Deltek: 6h avg for technical writeups"
+    },
+    {
+        "date": "2026-05-16",
+        "notes": "Phleet coding, QB Time API integration",
+        "actual": 1.5,
+        "category": "automation_development",
+        "claude_min": 90,
+        "deliverable": "app_code",
+        "equiv": 6.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 3.4h avg tool dev (pre-Claude); GitHub/Microsoft: 55% faster with AI coding; McKinsey: 25-50% dev speed gain"
+    },
+    {
+        "date": "2026-05-16",
+        "notes": "BD process development — job tracking workflow",
+        "actual": 1.0,
+        "category": "automation_development",
+        "claude_min": 60,
+        "deliverable": "automation_scripts",
+        "equiv": 4.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 1h automation baseline; McKinsey: 25-50% dev productivity; Anthropic: 2x on SWE-bench coding tasks"
+    },
+    {
+        "date": "2026-05-18",
+        "notes": "Business development process development — task flow automation",
+        "actual": 1.75,
+        "category": "automation_development",
+        "claude_min": 105,
+        "deliverable": "automation_scripts",
+        "equiv": 7.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 1h automation baseline; GitHub/Microsoft: 55% faster with Copilot; scaled for full workflow build"
+    },
+    {
+        "date": "2026-05-18",
+        "notes": "AECOM EOI finalization and submission to Lindsay Thiess",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 60,
+        "deliverable": "eoi_document",
+        "equiv": 4.0,
+        "multiplier": 2.7,
+        "evidence": "SMPS: 8-12h for EOI packages; PSMJ: 4-6h for expressions of interest; scaled for finalization stage"
+    },
+    {
+        "date": "2026-05-18",
+        "notes": "AECOM EOI form, Ambrosia Lake briefing review",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 45,
+        "deliverable": "eoi_form",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "SMPS: 8-12h for EOI packages; content review and form completion portion"
+    },
+    {
+        "date": "2026-05-19",
+        "notes": "Environmental portfolio writeup review — Bingham, Carr Fork, IS&R",
+        "actual": 2.0,
+        "category": "content_generation",
+        "claude_min": 120,
+        "deliverable": "env_descriptions",
+        "equiv": 8.0,
+        "multiplier": 4.0,
+        "evidence": "SMPS: 4-8h per project description; Deltek: 6h avg; 4 project descriptions = 24h baseline, review stage = 8h"
+    },
+    {
+        "date": "2026-05-19",
+        "notes": "Environmental SOQ coordination with GR, resumes and project descriptions",
+        "actual": 1.25,
+        "category": "content_generation",
+        "claude_min": 75,
+        "deliverable": "soq_document",
+        "equiv": 4.0,
+        "multiplier": 3.2,
+        "evidence": "SMPS: 24h avg full SOQ; PSMJ: 16-40h for pursuit packages; coordination portion with resume formatting"
+    },
+    {
+        "date": "2026-05-19",
+        "notes": "Internal tool development — Mapbox, MCP integrations, AI platform research",
+        "actual": 1.0,
+        "category": "automation_development",
+        "claude_min": 60,
+        "deliverable": "platform_integration",
+        "equiv": 4.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 3.4h avg tool dev; GitHub/Microsoft: 55% faster with AI coding; McKinsey: 25-50% dev speed gain"
+    },
+    {
+        "date": "2026-05-20",
+        "notes": "Environmental SOQ coordination, Barneys Canyon photo extraction",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 90,
+        "deliverable": "soq_document",
+        "equiv": 5.0,
+        "multiplier": 3.3,
+        "evidence": "SMPS: 24h avg SOQ; photo curation + description coordination portion"
+    },
+    {
+        "date": "2026-05-20",
+        "notes": "AECOM uranium SOQ prep, Ambrosia Lake folder review",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 60,
+        "deliverable": "soq_document",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "SMPS: 24h avg full SOQ; prep and document organization stage"
+    },
+    {
+        "date": "2026-05-20",
+        "notes": "U3P Great Salt Lake Wetland RFQ evaluation, association research",
+        "actual": 0.5,
+        "category": "research_evaluation",
+        "claude_min": 30,
+        "deliverable": "rfq_evaluation",
+        "equiv": 2.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 2.9h avg research; PSMJ: 4-8h for Go/No-Go evaluation; Harvard/BCG: 40% faster on analytical tasks"
+    },
+    {
+        "date": "2026-05-20",
+        "notes": "Website portfolio selection, DOGM listing update",
+        "actual": 0.5,
+        "category": "content_generation",
+        "claude_min": 30,
+        "deliverable": "website_content",
+        "equiv": 1.5,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2024: 2.4h avg landing page work; content selection and listing update portion"
+    },
+    {
+        "date": "2026-05-21",
+        "notes": "Septic design landing page audit, HubSpot form review, conversion updates",
+        "actual": 1.5,
+        "category": "analysis_audit",
+        "claude_min": 60,
+        "deliverable": "landing_page_audit",
+        "equiv": 4.5,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2024: 2.4h avg landing page; SMPS: 8h for marketing audits; Harvard/BCG: 40% faster analytical tasks"
+    },
+    {
+        "date": "2026-05-21",
+        "notes": "AECOM uranium SOQ finalization, KC resume coordination, website writeup",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 75,
+        "deliverable": "soq_document",
+        "equiv": 5.0,
+        "multiplier": 3.3,
+        "evidence": "SMPS: 24h avg SOQ; finalization stage with resume coordination"
+    },
+    {
+        "date": "2026-05-21",
+        "notes": "Internal tool development — Phleet inspection app, API integrations",
+        "actual": 1.0,
+        "category": "automation_development",
+        "claude_min": 80,
+        "deliverable": "app_code",
+        "equiv": 4.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 3.4h avg tool dev; GitHub/Microsoft: 55% faster; Anthropic: 2x on coding tasks"
+    },
+    {
+        "date": "2026-05-21",
+        "notes": "BD outreach target list, association research, DOGM listing update",
+        "actual": 1.0,
+        "category": "research_evaluation",
+        "claude_min": 45,
+        "deliverable": "market_research",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2024: 2.9h avg research; Harvard/BCG: 40% faster on research tasks; McKinsey: 35% efficiency gain"
+    },
+    {
+        "date": "2026-05-21",
+        "notes": "Kevin Cosper master resume development and structure",
+        "actual": 4.0,
+        "category": "content_generation",
+        "claude_min": 155,
+        "deliverable": "resume_document",
+        "equiv": 14.0,
+        "multiplier": 3.5,
+        "evidence": "QB Time 2024: 12-16h for master resume build; SMPS: 16-24h avg for AEC firms; MIT: 37% faster on professional writing"
+    },
+    {
+        "date": "2026-05-22",
+        "notes": "KC master resume, Claude coding production",
+        "actual": 3.5,
+        "category": "content_generation",
+        "claude_min": 140,
+        "deliverable": "resume_document",
+        "equiv": 10.0,
+        "multiplier": 2.9,
+        "evidence": "QB Time 2024: 12-16h for master resume; continuation/refinement stage; SMPS: 16-24h avg"
+    },
+    {
+        "date": "2026-05-22",
+        "notes": "Environmental project descriptions — Bingham Creek, Barneys Canyon review",
+        "actual": 2.0,
+        "category": "content_generation",
+        "claude_min": 100,
+        "deliverable": "env_descriptions",
+        "equiv": 8.0,
+        "multiplier": 4.0,
+        "evidence": "SMPS: 4-8h per project description; Deltek: 6h avg; review and finalization of multiple descriptions"
+    },
+    {
+        "date": "2026-05-22",
+        "notes": "Internal BD process development, job tracking workflow",
+        "actual": 1.5,
+        "category": "automation_development",
+        "claude_min": 90,
+        "deliverable": "automation_scripts",
+        "equiv": 6.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2024: 1h automation baseline; time-harvest skill build; GitHub/Microsoft: 55% faster with AI coding"
+    }
+]
 };
 
 // ── RENDER ──
