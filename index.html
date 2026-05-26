@@ -4,182 +4,364 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Claude Productivity Dashboard — Anderson Psomas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --border: #334155;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --accent: #818cf8;
-    --green: #34d399;
-    --amber: #fbbf24;
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --card: #1a2234;
+    --card-hover: #1e2940;
+    --border: #2a3550;
+    --border-light: #334466;
+    --text: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --muted: #8899b4;
+    --accent: #6366f1;
+    --accent-light: #818cf8;
+    --accent-glow: rgba(99,102,241,0.15);
+    --green: #10b981;
+    --green-light: #34d399;
+    --green-glow: rgba(16,185,129,0.12);
+    --amber: #f59e0b;
+    --amber-light: #fbbf24;
+    --amber-glow: rgba(245,158,11,0.12);
+    --red: #ef4444;
+    --cyan: #06b6d4;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
-    padding: 2rem;
     min-height: 100vh;
+    overflow-x: hidden;
   }
+
+  /* ── Layout ── */
+  .container { max-width: 1400px; margin: 0 auto; padding: 2.5rem 3rem; }
+
+  /* ── Header ── */
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 2rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 1rem;
   }
-  .header h1 { font-size: 1.5rem; font-weight: 600; }
-  .header .updated { color: var(--muted); font-size: 0.85rem; }
-  .kpi-grid {
+  .header-left { display: flex; align-items: center; gap: 1rem; }
+  .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem; color: white;
+  }
+  .header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header .subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
+  .header .updated {
+    color: var(--muted); font-size: 0.78rem;
+    background: var(--surface); padding: 0.4rem 0.8rem;
+    border-radius: 8px; border: 1px solid var(--border);
+  }
+
+  /* ── KPI Hero ── */
+  .kpi-hero {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: 1.2fr repeat(4, 1fr);
     gap: 1rem;
     margin-bottom: 2rem;
   }
   .kpi {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem;
+    border-radius: 14px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
   }
-  .kpi .label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-  .kpi .value { font-size: 2rem; font-weight: 700; }
-  .kpi .value.accent { color: var(--accent); }
-  .kpi .value.green { color: var(--green); }
-  .kpi .value.amber { color: var(--amber); }
-  .kpi .sub { color: var(--muted); font-size: 0.8rem; margin-top: 0.25rem; }
+  .kpi:hover { border-color: var(--border-light); transform: translateY(-1px); }
+  .kpi.hero {
+    background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.05));
+    border-color: rgba(99,102,241,0.25);
+  }
+  .kpi .glow {
+    position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px; border-radius: 50%;
+    filter: blur(40px); opacity: 0.4; pointer-events: none;
+  }
+  .kpi.hero .glow { background: var(--accent); }
+  .kpi .label {
+    color: var(--muted); font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem;
+  }
+  .kpi .value {
+    font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .kpi.hero .value { font-size: 2.8rem; }
+  .kpi .value.accent { color: var(--accent-light); }
+  .kpi .value.green { color: var(--green-light); }
+  .kpi .value.amber { color: var(--amber-light); }
+  .kpi .sub {
+    color: var(--muted); font-size: 0.75rem; margin-top: 0.5rem;
+    font-weight: 500;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-size: 0.72rem; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 1rem; padding-left: 0.25rem;
+  }
+
+  /* ── Charts ── */
   .charts {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: 340px 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
   }
   .chart-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 1.5rem;
   }
-  .chart-card h3 { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .chart-card h3 {
+    font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;
+    margin-bottom: 1.25rem; letter-spacing: -0.01em;
+  }
+
+  /* ── Table ── */
   .table-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 14px;
+    padding: 1.75rem;
     overflow-x: auto;
+    margin-bottom: 2rem;
   }
-  .table-card h3 { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; }
-  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
-  tr:last-child td { border-bottom: none; }
-  .multiplier-badge {
+  .table-card h3 {
+    font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;
+    margin-bottom: 1.25rem;
+  }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.82rem; }
+  thead th {
+    text-align: left; padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted); font-weight: 600; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    position: sticky; top: 0; background: var(--card);
+  }
+  tbody td {
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(42,53,80,0.5);
+    vertical-align: top;
+  }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: var(--card-hover); }
+  tbody tr:last-child td { border-bottom: none; }
+  .entry-notes { color: var(--text-secondary); line-height: 1.4; max-width: 380px; }
+  .category-tag {
     display: inline-block;
-    background: rgba(129,140,248,0.15);
-    color: var(--accent);
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.8rem;
+    padding: 0.2rem 0.55rem; border-radius: 6px;
+    font-size: 0.7rem; font-weight: 600;
+    white-space: nowrap;
   }
+  .cat-content { background: rgba(99,102,241,0.12); color: var(--accent-light); }
+  .cat-automation { background: rgba(16,185,129,0.12); color: var(--green-light); }
+  .cat-research { background: rgba(245,158,11,0.12); color: var(--amber-light); }
+  .cat-analysis { background: rgba(6,182,212,0.12); color: var(--cyan); }
+  .multiplier-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 48px; padding: 0.25rem 0.6rem;
+    border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+    background: var(--accent-glow); color: var(--accent-light);
+  }
+  .mult-high { background: var(--green-glow); color: var(--green-light); }
+  .evidence-text {
+    color: var(--muted); font-size: 0.72rem; line-height: 1.5;
+    max-width: 320px;
+  }
+  .hours-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .hours-equiv { color: var(--amber-light); }
+
+  /* ── Methodology ── */
+  .methodology {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  .methodology h3 {
+    font-size: 0.85rem; font-weight: 700; color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .methodology .intro {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+    margin-bottom: 1.5rem; max-width: 800px;
+  }
+  .layers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .layer {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border-top: 3px solid transparent;
+  }
+  .layer-1 { border-top-color: var(--accent); }
+  .layer-2 { border-top-color: var(--green); }
+  .layer-3 { border-top-color: var(--amber); }
+  .layer .layer-title {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 0.6rem;
+  }
+  .layer-1 .layer-title { color: var(--accent-light); }
+  .layer-2 .layer-title { color: var(--green-light); }
+  .layer-3 .layer-title { color: var(--amber-light); }
+  .layer .layer-body { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+  .methodology .note {
+    margin-top: 1.25rem; font-size: 0.72rem; color: #4a5578;
+    line-height: 1.6; font-style: italic;
+  }
+
+  /* ── Footer ── */
   .footer {
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.75rem;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
+    text-align: center; color: #3a4560; font-size: 0.72rem;
+    padding: 1.5rem 0 0.5rem; border-top: 1px solid rgba(42,53,80,0.4);
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1100px) {
+    .kpi-hero { grid-template-columns: repeat(3, 1fr); }
+    .kpi.hero { grid-column: span 3; }
+    .charts { grid-template-columns: 1fr; }
+    .layers { grid-template-columns: 1fr; }
   }
   @media (max-width: 768px) {
-    .charts { grid-template-columns: 1fr; }
-    body { padding: 1rem; }
+    .container { padding: 1.5rem 1rem; }
+    .kpi-hero { grid-template-columns: 1fr 1fr; }
+    .kpi.hero { grid-column: span 2; }
+    .header { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
   }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>Claude Productivity Dashboard</h1>
-  <span class="updated" id="lastUpdated"></span>
-</div>
+<div class="container">
 
-<div class="kpi-grid">
-  <div class="kpi">
-    <div class="label">Overall Multiplier</div>
-    <div class="value accent" id="kpiMultiplier">--</div>
-    <div class="sub">human-equiv / actual</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Hours Saved</div>
-    <div class="value green" id="kpiSaved">--</div>
-    <div class="sub">cumulative</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Actual Hours</div>
-    <div class="value" id="kpiActual">--</div>
-    <div class="sub">with Claude</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Human Equiv Hours</div>
-    <div class="value amber" id="kpiEquiv">--</div>
-    <div class="sub">without Claude</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Entries Tracked</div>
-    <div class="value" id="kpiEntries">--</div>
-    <div class="sub">Claude-assisted</div>
-  </div>
-</div>
-
-<div class="charts">
-  <div class="chart-card">
-    <h3>Hours by Category</h3>
-    <canvas id="categoryChart"></canvas>
-  </div>
-  <div class="chart-card">
-    <h3>Actual vs Human-Equivalent</h3>
-    <canvas id="comparisonChart"></canvas>
-  </div>
-</div>
-
-<div class="table-card">
-  <h3>Entry Detail</h3>
-  <table>
-    <thead>
-      <tr><th>Date</th><th>Entry</th><th>Actual</th><th>Category</th><th>Human Equiv</th><th>Multiplier</th><th>Evidence Source</th></tr>
-    </thead>
-    <tbody id="detailTable"></tbody>
-  </table>
-</div>
-
-<div class="chart-card" style="margin-top:1.5rem;">
-  <h3>Methodology & Data Sources</h3>
-  <div style="font-size:0.85rem;color:var(--muted);line-height:1.7;">
-    <p style="margin-bottom:1rem;">Each entry represents a <strong style="color:var(--text);">named deliverable</strong> produced with Claude assistance. Entries without a tangible output (meetings, phone calls, email routing) are excluded. Multipliers are calculated from three independent evidence layers:</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
-      <div style="background:var(--bg);border-radius:8px;padding:1rem;">
-        <div style="color:var(--accent);font-weight:600;margin-bottom:0.5rem;">Layer 1 — Internal Baseline</div>
-        <div>QuickBooks Time (TSheets) entries from 2024, pre-Claude. Matched by jobcode + keyword similarity to establish Brandon's historical duration for comparable tasks. Weighted 2x when available.</div>
-      </div>
-      <div style="background:var(--bg);border-radius:8px;padding:1rem;">
-        <div style="color:var(--green);font-weight:600;margin-bottom:0.5rem;">Layer 2 — AEC Industry Benchmarks</div>
-        <div>PSMJ Resources (pursuit time studies), Deltek Clarity Report (utilization benchmarks), SMPS Foundation (proposal/SOQ time surveys), ACEC benchmarks, RSMeans labor data, ENR productivity indices.</div>
-      </div>
-      <div style="background:var(--bg);border-radius:8px;padding:1rem;">
-        <div style="color:var(--amber);font-weight:600;margin-bottom:0.5rem;">Layer 3 — Published AI Research</div>
-        <div>Harvard/BCG (40% faster analytical tasks, Nov 2023), MIT/Stanford (37% faster professional writing), GitHub/Microsoft (55% faster coding with Copilot), McKinsey (25-50% dev productivity), NBER (14% support productivity), Anthropic SWE-bench (2x coding tasks).</div>
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">AP</div>
+      <div>
+        <h1>Claude Productivity Dashboard</h1>
+        <div class="subtitle">Anderson Psomas — AI Productivity Multiplier Tracker</div>
       </div>
     </div>
-    <p style="margin-top:1rem;font-size:0.8rem;color:#64748b;">Human-equivalent hours = weighted average of internal baseline (2x weight) + industry benchmark. When no internal baseline exists, industry + research benchmarks are used. Conservative estimates applied — multipliers represent the lower bound of the evidence range.</p>
+    <span class="updated" id="lastUpdated"></span>
   </div>
-</div>
 
-<div class="footer">
-  Anderson Psomas — Claude Productivity Tracker — Auto-updated by Time Harvest weekly review
+  <div class="kpi-hero">
+    <div class="kpi hero">
+      <div class="glow"></div>
+      <div class="label">Overall Multiplier</div>
+      <div class="value accent" id="kpiMultiplier">--</div>
+      <div class="sub">human-equivalent / actual hours</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Hours Saved</div>
+      <div class="value green" id="kpiSaved">--</div>
+      <div class="sub">cumulative</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Actual Hours</div>
+      <div class="value" id="kpiActual">--</div>
+      <div class="sub">with Claude</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Human Equiv Hours</div>
+      <div class="value amber" id="kpiEquiv">--</div>
+      <div class="sub">without Claude</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Deliverables Tracked</div>
+      <div class="value" id="kpiEntries">--</div>
+      <div class="sub">Claude-assisted</div>
+    </div>
+  </div>
+
+  <div class="section-title">Performance Breakdown</div>
+  <div class="charts">
+    <div class="chart-card">
+      <h3>Hours by Category</h3>
+      <canvas id="categoryChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Actual vs Human-Equivalent Hours</h3>
+      <canvas id="comparisonChart"></canvas>
+    </div>
+  </div>
+
+  <div class="section-title">Deliverable Detail</div>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Deliverable</th>
+          <th style="text-align:right">Actual</th>
+          <th style="text-align:right">Human Equiv</th>
+          <th style="text-align:center">Multiplier</th>
+          <th>Category</th>
+          <th>Evidence Source</th>
+        </tr>
+      </thead>
+      <tbody id="detailTable"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Methodology</div>
+  <div class="methodology">
+    <h3>How Multipliers Are Calculated</h3>
+    <div class="intro">
+      Each entry represents a <strong style="color:var(--text)">named deliverable</strong> produced with Claude assistance.
+      Entries without a tangible output (meetings, phone calls, email routing) are excluded.
+      Multipliers are derived from three independent evidence layers, with conservative lower-bound estimates applied.
+    </div>
+    <div class="layers">
+      <div class="layer layer-1">
+        <div class="layer-title">Layer 1 — Internal Baseline</div>
+        <div class="layer-body">QuickBooks Time (TSheets) entries from 2024, pre-Claude. Matched by jobcode + keyword similarity to establish historical duration for comparable tasks. Weighted 2x when available.</div>
+      </div>
+      <div class="layer layer-2">
+        <div class="layer-title">Layer 2 — AEC Industry Benchmarks</div>
+        <div class="layer-body">PSMJ Resources (pursuit time studies), Deltek Clarity Report (utilization benchmarks), SMPS Foundation (proposal/SOQ time surveys), ACEC benchmarks, RSMeans labor data, ENR productivity indices.</div>
+      </div>
+      <div class="layer layer-3">
+        <div class="layer-title">Layer 3 — Published AI Research</div>
+        <div class="layer-body">Harvard/BCG (40% faster analytical tasks, 2023), MIT/Stanford (37% faster professional writing), GitHub/Microsoft (55% faster coding), McKinsey (25-50% dev productivity), NBER (14% support productivity), Anthropic SWE-bench (2x coding tasks).</div>
+      </div>
+    </div>
+    <div class="note">
+      Human-equivalent hours = weighted average of internal baseline (2x weight) + industry benchmark.
+      When no internal baseline exists, industry + research benchmarks are used.
+      All multipliers represent the conservative lower bound of the evidence range.
+    </div>
+  </div>
+
+  <div class="footer">
+    Anderson Psomas &mdash; Claude Productivity Tracker &mdash; Auto-updated by Time Harvest weekly review
+  </div>
 </div>
 
 <script>
@@ -459,61 +641,99 @@ document.getElementById('kpiActual').textContent = totalActual.toFixed(1) + 'h';
 document.getElementById('kpiEquiv').textContent = totalEquiv > 0 ? totalEquiv.toFixed(1) + 'h' : '--';
 document.getElementById('kpiEntries').textContent = entries.length;
 
-// Category chart
+// Category chart — doughnut
 const cats = {};
 entries.forEach(e => { cats[e.category] = (cats[e.category] || 0) + e.actual; });
-const catLabels = Object.keys(cats).map(c => c.replace(/_/g, ' '));
-const catColors = ['#818cf8','#34d399','#fbbf24','#f87171','#38bdf8','#a78bfa'];
+const catLabels = Object.keys(cats).map(c => {
+  return c.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+});
+const catColors = ['#818cf8','#34d399','#fbbf24','#06b6d4','#f87171','#a78bfa'];
 new Chart(document.getElementById('categoryChart'), {
   type: 'doughnut',
   data: {
     labels: catLabels,
-    datasets: [{ data: Object.values(cats), backgroundColor: catColors, borderWidth: 0 }]
+    datasets: [{ data: Object.values(cats), backgroundColor: catColors, borderWidth: 0, hoverOffset: 6 }]
   },
   options: {
-    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 12, font: { size: 11 } } } },
-    cutout: '60%'
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#8899b4', padding: 14, font: { size: 11, family: 'Inter' }, usePointStyle: true, pointStyleWidth: 8 }
+      }
+    },
+    cutout: '65%'
   }
 });
 
-// Comparison chart (only entries with multiplier data)
+// Comparison chart — grouped by deliverable type, sorted by savings
 if (withMultiplier.length > 0) {
-  const compLabels = withMultiplier.map(e => e.notes.substring(0, 30) + '...');
+  // Group by deliverable type, sum actual and equiv
+  const delivGroups = {};
+  withMultiplier.forEach(e => {
+    const key = e.deliverable.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    if (!delivGroups[key]) delivGroups[key] = { actual: 0, equiv: 0 };
+    delivGroups[key].actual += e.actual;
+    delivGroups[key].equiv += e.equiv || 0;
+  });
+  const sorted = Object.entries(delivGroups).sort((a,b) => (b[1].equiv - b[1].actual) - (a[1].equiv - a[1].actual));
+  const labels = sorted.map(s => s[0]);
+  const actuals = sorted.map(s => s[1].actual);
+  const equivs = sorted.map(s => s[1].equiv);
+
   new Chart(document.getElementById('comparisonChart'), {
     type: 'bar',
     data: {
-      labels: compLabels,
+      labels,
       datasets: [
-        { label: 'Actual Hours', data: withMultiplier.map(e => e.actual), backgroundColor: '#818cf8' },
-        { label: 'Human Equivalent', data: withMultiplier.map(e => e.equiv), backgroundColor: '#fbbf2466', borderColor: '#fbbf24', borderWidth: 1 }
+        { label: 'Actual Hours (with Claude)', data: actuals, backgroundColor: '#6366f1', borderRadius: 4, barPercentage: 0.7 },
+        { label: 'Human Equivalent (without)', data: equivs, backgroundColor: 'rgba(245,158,11,0.25)', borderColor: '#f59e0b', borderWidth: 1.5, borderRadius: 4, barPercentage: 0.7 }
       ]
     },
     options: {
       indexAxis: 'y',
-      plugins: { legend: { labels: { color: '#94a3b8' } } },
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#8899b4', font: { size: 11, family: 'Inter' }, usePointStyle: true, pointStyleWidth: 8, padding: 16 } }
+      },
       scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
-        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+        x: {
+          ticks: { color: '#6b7a96', font: { size: 11 } },
+          grid: { color: 'rgba(42,53,80,0.4)' },
+          title: { display: true, text: 'Hours', color: '#6b7a96', font: { size: 11 } }
+        },
+        y: {
+          ticks: { color: '#8899b4', font: { size: 11.5, family: 'Inter' } },
+          grid: { display: false }
+        }
       }
     }
   });
-} else {
-  document.getElementById('comparisonChart').parentElement.innerHTML += '<p style="color:#94a3b8;text-align:center;padding:2rem;">Multiplier data available after first Thursday review</p>';
 }
 
 // Detail table
 const tbody = document.getElementById('detailTable');
 entries.forEach(e => {
-  const mult = e.multiplier ? `<span class="multiplier-badge">${e.multiplier}x</span>` : '<span style="color:#64748b">pending</span>';
-  const evidence = e.evidence ? `<span style="color:#64748b;font-size:0.75rem;">${e.evidence}</span>` : '<span style="color:#64748b">--</span>';
+  const mult = e.multiplier
+    ? `<span class="multiplier-badge ${e.multiplier >= 4 ? 'mult-high' : ''}">${e.multiplier}x</span>`
+    : '<span style="color:#4a5578">pending</span>';
+  const catClass = e.category.includes('content') ? 'cat-content'
+    : e.category.includes('automation') ? 'cat-automation'
+    : e.category.includes('research') ? 'cat-research'
+    : 'cat-analysis';
+  const catLabel = e.category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const evidence = e.evidence
+    ? `<span class="evidence-text">${e.evidence}</span>`
+    : '<span style="color:#4a5578">—</span>';
   tbody.innerHTML += `<tr>
-    <td>${e.date}</td>
-    <td>${e.notes.substring(0, 60)}${e.notes.length > 60 ? '...' : ''}</td>
-    <td>${e.actual}h</td>
-    <td style="color:#94a3b8">${e.category.replace(/_/g, ' ')}</td>
-    <td>${e.equiv ? e.equiv + 'h' : '--'}</td>
-    <td>${mult}</td>
-    <td style="max-width:300px">${evidence}</td>
+    <td style="white-space:nowrap;color:var(--muted)">${e.date}</td>
+    <td class="entry-notes">${e.notes}</td>
+    <td class="hours-cell" style="text-align:right">${e.actual}h</td>
+    <td class="hours-cell hours-equiv" style="text-align:right">${e.equiv ? e.equiv + 'h' : '—'}</td>
+    <td style="text-align:center">${mult}</td>
+    <td><span class="category-tag ${catClass}">${catLabel}</span></td>
+    <td>${evidence}</td>
   </tr>`;
 });
 </script>
