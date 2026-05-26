@@ -121,7 +121,7 @@
   /* ── Charts ── */
   .charts {
     display: grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 300px 1fr;
     gap: 1.25rem;
     margin-bottom: 2.5rem;
   }
@@ -134,6 +134,163 @@
   .chart-card h3 {
     font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;
     margin-bottom: 1.25rem; letter-spacing: -0.01em;
+  }
+
+  /* ── Economist-style chart ── */
+  .econ-chart {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem 1.75rem 1.25rem;
+    position: relative;
+  }
+  .econ-chart::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: #e3120b;
+    border-radius: 14px 14px 0 0;
+  }
+  .econ-headline {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+  }
+  .econ-subtitle {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+  .econ-legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .econ-legend-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .econ-legend-line {
+    display: inline-block;
+    width: 20px; height: 2px;
+    background: rgba(255,255,255,0.15);
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  /* Dot plot rows */
+  .econ-rows { position: relative; }
+  .econ-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 48px;
+    align-items: center;
+    height: 34px;
+    border-bottom: 1px solid rgba(42,53,80,0.35);
+  }
+  .econ-row:last-child { border-bottom: none; }
+  .econ-row-label {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 0.75rem;
+  }
+  .econ-row-track {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .econ-row-connector {
+    position: absolute;
+    height: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 1px;
+  }
+  .econ-dot {
+    position: absolute;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    transition: transform 0.15s;
+  }
+  .econ-dot:hover { transform: translateX(-50%) scale(1.4); }
+  .econ-dot-actual {
+    background: #e3120b;
+    box-shadow: 0 0 0 2px rgba(227,18,11,0.2);
+  }
+  .econ-dot-equiv {
+    background: var(--text-secondary);
+    border: 2px solid var(--card);
+    box-shadow: 0 0 0 1px var(--text-secondary);
+    width: 11px; height: 11px;
+  }
+  .econ-row-savings {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--green-light);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    padding-left: 0.5rem;
+  }
+
+  /* Axis ticks */
+  .econ-axis {
+    display: grid;
+    grid-template-columns: 140px 1fr 48px;
+    margin-top: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .econ-axis-track {
+    position: relative;
+    height: 16px;
+  }
+  .econ-axis-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: #4a5578;
+    font-variant-numeric: tabular-nums;
+  }
+  .econ-axis-label {
+    font-size: 0.65rem;
+    color: #4a5578;
+    text-align: right;
+    padding-left: 0.5rem;
+  }
+
+  /* Vertical gridlines */
+  .econ-gridlines {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .econ-gridline {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(42,53,80,0.3);
+  }
+
+  .econ-source {
+    margin-top: 0.75rem;
+    font-size: 0.65rem;
+    color: #3a4560;
+    font-style: italic;
   }
 
   /* ── Table ── */
@@ -306,9 +463,21 @@
       <h3>Hours by Category</h3>
       <canvas id="categoryChart"></canvas>
     </div>
-    <div class="chart-card">
-      <h3>Actual vs Human-Equivalent Hours</h3>
-      <canvas id="comparisonChart"></canvas>
+    <div class="econ-chart">
+      <div class="econ-headline" id="econHeadline"></div>
+      <div class="econ-subtitle">Hours with Claude vs human-equivalent without, by deliverable type</div>
+      <div class="econ-legend">
+        <span><span class="econ-legend-dot" style="background:#e3120b"></span>With Claude</span>
+        <span><span class="econ-legend-dot" style="background:var(--text-secondary)"></span>Without Claude</span>
+        <span><span class="econ-legend-line"></span>Time saved</span>
+      </div>
+      <div class="econ-rows" id="econRows"></div>
+      <div class="econ-axis" id="econAxis">
+        <div></div>
+        <div class="econ-axis-track" id="econAxisTrack"></div>
+        <div class="econ-axis-label">Saved</div>
+      </div>
+      <div class="econ-source">Sources: QuickBooks Time 2024 baseline, SMPS/PSMJ/Deltek AEC benchmarks, Harvard/MIT/McKinsey AI research</div>
     </div>
   </div>
 
@@ -667,9 +836,8 @@ new Chart(document.getElementById('categoryChart'), {
   }
 });
 
-// Comparison chart — grouped by deliverable type, sorted by savings
+// Economist-style connected dot plot
 if (withMultiplier.length > 0) {
-  // Group by deliverable type, sum actual and equiv
   const delivGroups = {};
   withMultiplier.forEach(e => {
     const key = e.deliverable.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -678,38 +846,52 @@ if (withMultiplier.length > 0) {
     delivGroups[key].equiv += e.equiv || 0;
   });
   const sorted = Object.entries(delivGroups).sort((a,b) => (b[1].equiv - b[1].actual) - (a[1].equiv - a[1].actual));
-  const labels = sorted.map(s => s[0]);
-  const actuals = sorted.map(s => s[1].actual);
-  const equivs = sorted.map(s => s[1].equiv);
+  const maxVal = Math.max(...sorted.map(s => s[1].equiv));
+  const axisMax = Math.ceil(maxVal / 5) * 5;
+  const totalSaved = sorted.reduce((s, r) => s + (r[1].equiv - r[1].actual), 0);
 
-  new Chart(document.getElementById('comparisonChart'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: 'Actual Hours (with Claude)', data: actuals, backgroundColor: '#6366f1', borderRadius: 4, barPercentage: 0.7 },
-        { label: 'Human Equivalent (without)', data: equivs, backgroundColor: 'rgba(245,158,11,0.25)', borderColor: '#f59e0b', borderWidth: 1.5, borderRadius: 4, barPercentage: 0.7 }
-      ]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: '#8899b4', font: { size: 11, family: 'Inter' }, usePointStyle: true, pointStyleWidth: 8, padding: 16 } }
-      },
-      scales: {
-        x: {
-          ticks: { color: '#6b7a96', font: { size: 11 } },
-          grid: { color: 'rgba(42,53,80,0.4)' },
-          title: { display: true, text: 'Hours', color: '#6b7a96', font: { size: 11 } }
-        },
-        y: {
-          ticks: { color: '#8899b4', font: { size: 11.5, family: 'Inter' } },
-          grid: { display: false }
-        }
-      }
-    }
+  // Editorial headline
+  document.getElementById('econHeadline').textContent =
+    `Claude cuts ${Math.round(totalSaved)} hours from ${sorted.length} deliverable categories`;
+
+  const rowsEl = document.getElementById('econRows');
+  let rowsHTML = '<div class="econ-gridlines" id="econGridlines"></div>';
+
+  sorted.forEach(([label, data]) => {
+    const pctActual = (data.actual / axisMax) * 100;
+    const pctEquiv = (data.equiv / axisMax) * 100;
+    const saved = (data.equiv - data.actual).toFixed(1);
+    const leftPct = Math.min(pctActual, pctEquiv);
+    const rightPct = Math.max(pctActual, pctEquiv);
+
+    rowsHTML += `
+      <div class="econ-row">
+        <div class="econ-row-label" title="${label}">${label}</div>
+        <div class="econ-row-track">
+          <div class="econ-row-connector" style="left:${leftPct}%;width:${rightPct - leftPct}%"></div>
+          <div class="econ-dot econ-dot-actual" style="left:${pctActual}%" title="${data.actual.toFixed(1)}h with Claude"></div>
+          <div class="econ-dot econ-dot-equiv" style="left:${pctEquiv}%" title="${data.equiv.toFixed(1)}h without Claude"></div>
+        </div>
+        <div class="econ-row-savings">+${saved}h</div>
+      </div>`;
   });
+  rowsEl.innerHTML = rowsHTML;
+
+  // Gridlines
+  const gridEl = document.getElementById('econGridlines');
+  let gridHTML = '';
+  for (let v = 0; v <= axisMax; v += 5) {
+    gridHTML += `<div class="econ-gridline" style="left:${(v / axisMax) * 100}%"></div>`;
+  }
+  gridEl.innerHTML = gridHTML;
+
+  // Axis ticks
+  const axisTrack = document.getElementById('econAxisTrack');
+  let axisHTML = '';
+  for (let v = 0; v <= axisMax; v += 5) {
+    axisHTML += `<span class="econ-axis-tick" style="left:${(v / axisMax) * 100}%">${v}h</span>`;
+  }
+  axisTrack.innerHTML = axisHTML;
 }
 
 // Detail table
