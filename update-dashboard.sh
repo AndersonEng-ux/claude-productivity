@@ -1,10 +1,11 @@
 #!/bin/bash
-# Reads claude-productivity.csv and rebuilds the DASHBOARD_DATA in index.html
-# Called by Thursday weekly review after multipliers are calculated
+# Reads claude-productivity.csv + timecard.csv and rebuilds DASHBOARD_DATA in index.html
+# Called by Thursday weekly review after multipliers are calculated, or manually after daily updates.
 
 set -euo pipefail
 
 CSV="$HOME/drewos/timecard/claude-productivity.csv"
+TIMECARD="$HOME/drewos/timecard/timecard.csv"
 HTML="$HOME/drewos/timecard/dashboard/index.html"
 REPO_DIR="$HOME/drewos/timecard/dashboard"
 TODAY=$(date +%Y-%m-%d)
@@ -14,10 +15,12 @@ if [ ! -f "$CSV" ]; then
   exit 1
 fi
 
-# Build JSON entries from CSV
-ENTRIES=$(python3 -c "
-import csv, json, sys
+# Build combined JSON (productivity entries + timecard daily totals)
+PAYLOAD=$(python3 -c "
+import csv, json, datetime
+from collections import defaultdict
 
+# Productivity entries
 entries = []
 with open('$CSV') as f:
     reader = csv.DictReader(f)
@@ -36,25 +39,46 @@ with open('$CSV') as f:
             'evidence': row.get('evidence_source','')
         })
 
-print(json.dumps(entries, indent=4))
+# Timecard daily totals (all jobcodes, all entries)
+by_date = defaultdict(float)
+try:
+    with open('$TIMECARD') as f:
+        reader = csv.reader(f)
+        next(reader, None)  # header
+        for row in reader:
+            if len(row) < 3: continue
+            try:
+                # date is M/D/YY format
+                d = datetime.datetime.strptime(row[0], '%m/%d/%y').strftime('%Y-%m-%d')
+                hours = float(row[2])
+                by_date[d] += hours
+            except (ValueError, IndexError):
+                continue
+except FileNotFoundError:
+    pass
+
+timecard_totals = {d: round(h, 2) for d, h in sorted(by_date.items())}
+
+print(json.dumps({'entries': entries, 'timecard_totals': timecard_totals}, indent=2))
 ")
 
 # Replace DASHBOARD_DATA block in HTML
 python3 -c "
-import re, sys
+import re
 
 with open('$HTML') as f:
     html = f.read()
 
 new_data = '''const DASHBOARD_DATA = {
   updated: \"$TODAY\",
-  entries: $ENTRIES
+  payload: $PAYLOAD
 };'''
 
 html = re.sub(
-    r'const DASHBOARD_DATA = \{.*?\};',
+    r'const DASHBOARD_DATA = \{.*?\n\};',
     new_data,
     html,
+    count=1,
     flags=re.DOTALL
 )
 
@@ -69,8 +93,8 @@ cd "$REPO_DIR"
 if git rev-parse --git-dir > /dev/null 2>&1; then
   git add -A
   if ! git diff --cached --quiet; then
-    git commit -m "Update productivity dashboard — $TODAY"
-    git push origin main
+    git commit -m "Update productivity dashboard — $TODAY" --quiet
+    git push origin main --quiet
     echo "Pushed to GitHub Pages"
   else
     echo "No changes to push"
