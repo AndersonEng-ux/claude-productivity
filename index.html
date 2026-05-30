@@ -443,12 +443,12 @@
         <button data-range="week" class="range-btn active" style="padding:0.4rem 0.8rem;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600">This Week</button>
         <button data-range="month" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">This Month</button>
         <button data-range="cumulative" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">Cumulative</button>
-        <button data-range="custom" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">Custom</button>
       </div>
-      <div id="customRangeInputs" style="display:none;gap:0.25rem;align-items:center;font-size:0.7rem;color:var(--muted)">
-        <input type="date" id="customFrom" style="padding:0.35rem 0.4rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--text);font-size:0.7rem;font-family:inherit">
-        <span>→</span>
-        <input type="date" id="customTo" style="padding:0.35rem 0.4rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--text);font-size:0.7rem;font-family:inherit">
+      <div id="customRangeInputs" style="display:flex;gap:0.4rem;align-items:center;font-size:0.7rem;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:4px;padding:0.25rem 0.55rem">
+        <label for="customFrom" style="font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:600">From</label>
+        <input type="date" id="customFrom" style="padding:0.3rem 0.45rem;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);font-size:0.75rem;font-family:inherit;font-weight:600;cursor:pointer">
+        <label for="customTo" style="font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:600">To</label>
+        <input type="date" id="customTo" style="padding:0.3rem 0.45rem;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);font-size:0.75rem;font-family:inherit;font-weight:600;cursor:pointer">
       </div>
       <div class="rate-toggle" id="rateTier" style="display:flex;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;font-size:0.72rem">
         <button data-tier="low" class="tier-btn" style="padding:0.4rem 0.7rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600" title="Conservative — use the low end of Upwork rate ranges">Low</button>
@@ -2061,21 +2061,40 @@ document.querySelectorAll('.range-btn').forEach(btn => {
     btn.style.background = 'var(--accent)';
     btn.style.color = 'white';
     currentRange = btn.dataset.range;
-    document.getElementById('customRangeInputs').style.display = (currentRange === 'custom') ? 'flex' : 'none';
-    if (currentRange === 'custom' && !customFrom && !customTo) {
-      // Seed with earliest and latest entry dates
-      const dates = ALL_ENTRIES.map(e => e.date).sort();
-      if (dates.length) {
-        customFrom = dates[0]; customTo = dates[dates.length-1];
-        document.getElementById('customFrom').value = customFrom;
-        document.getElementById('customTo').value = customTo;
-      }
-    }
     render();
   });
 });
-document.getElementById('customFrom').addEventListener('change', e => { customFrom = e.target.value || null; render(); });
-document.getElementById('customTo').addEventListener('change', e => { customTo = e.target.value || null; render(); });
+
+// Seed the date inputs with earliest → latest so they're never empty
+(function seedDateInputs() {
+  const dates = ALL_ENTRIES.map(e => e.date).sort();
+  if (dates.length) {
+    customFrom = dates[0];
+    customTo = dates[dates.length - 1];
+    document.getElementById('customFrom').value = customFrom;
+    document.getElementById('customTo').value = customTo;
+  }
+})();
+
+function switchToCustom() {
+  currentRange = 'custom';
+  document.querySelectorAll('.range-btn').forEach(b => {
+    const active = b.dataset.range === 'custom';
+    b.classList.toggle('active', active);
+    b.style.background = active ? 'var(--accent)' : 'transparent';
+    b.style.color = active ? 'white' : 'var(--text)';
+  });
+}
+document.getElementById('customFrom').addEventListener('change', e => {
+  customFrom = e.target.value || null;
+  switchToCustom();
+  render();
+});
+document.getElementById('customTo').addEventListener('change', e => {
+  customTo = e.target.value || null;
+  switchToCustom();
+  render();
+});
 
 // Rate tier toggle (Low / Median / High)
 document.querySelectorAll('.tier-btn').forEach(btn => {
