@@ -1910,7 +1910,7 @@ function render() {
   document.getElementById('kpiProdRatioSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} value over cost (vs Upwork)`;
 
   document.getElementById('kpiSaved').textContent = '+' + (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
-  document.getElementById('kpiSavedSub').textContent = `additional output worth ${fmt$(totalUpworkCost - totalBrandonCost)} (Upwork median)`;
+  document.getElementById('kpiSavedSub').textContent = `additional equiv-hours of professional output`;
   document.getElementById('kpiActual').textContent = totalPosted.toFixed(1) + 'h';
   document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inBounds(d)).length} days`;
   document.getElementById('kpiEquiv').textContent = pctAssisted + '%';
