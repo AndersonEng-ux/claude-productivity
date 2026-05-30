@@ -6,6 +6,7 @@ set -euo pipefail
 
 CSV="$HOME/drewos/timecard/claude-productivity.csv"
 TIMECARD="$HOME/drewos/timecard/timecard.csv"
+RATES="$HOME/drewos/timecard/utah-rates.json"
 HTML="$HOME/drewos/timecard/dashboard/index.html"
 REPO_DIR="$HOME/drewos/timecard/dashboard"
 TODAY=$(date +%Y-%m-%d)
@@ -60,7 +61,16 @@ except FileNotFoundError:
 
 timecard_totals = {d: round(h, 2) for d, h in sorted(by_date.items())}
 
-print(json.dumps({'entries': entries, 'timecard_totals': timecard_totals}, indent=2))
+# Utah Upwork rates
+rates = {}
+try:
+    with open('$RATES') as f:
+        rates_doc = json.load(f)
+        rates = rates_doc.get('rates_by_deliverable', {})
+except FileNotFoundError:
+    pass
+
+print(json.dumps({'entries': entries, 'timecard_totals': timecard_totals, 'rates': rates}, indent=2))
 ")
 
 # Replace DASHBOARD_DATA block in HTML

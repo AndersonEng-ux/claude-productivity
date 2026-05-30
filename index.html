@@ -508,8 +508,9 @@
           <th>Deliverable</th>
           <th style="text-align:right">Actual</th>
           <th style="text-align:right">Human Equiv</th>
+          <th style="text-align:right">$ Saved</th>
           <th style="text-align:center">Multiplier</th>
-          <th>Category</th>
+          <th>Role / Rate</th>
           <th>Evidence Source</th>
         </tr>
       </thead>
@@ -1061,6 +1062,164 @@ const DASHBOARD_DATA = {
     "2026-05-27": 8.0,
     "2026-05-28": 8.0,
     "2026-05-29": 8.0
+  },
+  "rates": {
+    "resume_document": {
+      "low": 35,
+      "median": 72,
+      "high": 120,
+      "role": "Master Resume Writer (AEC premium)"
+    },
+    "master_resumes": {
+      "low": 35,
+      "median": 72,
+      "high": 120,
+      "role": "Master Resume Writer (AEC premium)"
+    },
+    "soq_document": {
+      "low": 65,
+      "median": 90,
+      "high": 150,
+      "role": "AEC Proposal Writer"
+    },
+    "soq_nda_prep": {
+      "low": 65,
+      "median": 90,
+      "high": 150,
+      "role": "AEC Proposal Writer"
+    },
+    "eoi_document": {
+      "low": 40,
+      "median": 65,
+      "high": 100,
+      "role": "EOI Proposal Coordinator"
+    },
+    "eoi_form": {
+      "low": 40,
+      "median": 65,
+      "high": 100,
+      "role": "EOI Proposal Coordinator"
+    },
+    "project_descriptions": {
+      "low": 45,
+      "median": 70,
+      "high": 110,
+      "role": "Technical Project Description Writer"
+    },
+    "project_description_writeup": {
+      "low": 45,
+      "median": 70,
+      "high": 110,
+      "role": "Technical Project Description Writer"
+    },
+    "env_descriptions": {
+      "low": 45,
+      "median": 70,
+      "high": 110,
+      "role": "Technical Project Description Writer"
+    },
+    "website_content": {
+      "low": 25,
+      "median": 45,
+      "high": 85,
+      "role": "Web Content Writer (B2B)"
+    },
+    "campaign_forensic_audit": {
+      "low": 85,
+      "median": 135,
+      "high": 225,
+      "role": "PPC Forensic Audit Consultant"
+    },
+    "campaign_analysis": {
+      "low": 29,
+      "median": 55,
+      "high": 95,
+      "role": "PPC Campaign Review Analyst"
+    },
+    "landing_page_audit": {
+      "low": 50,
+      "median": 110,
+      "high": 200,
+      "role": "Landing Page / HubSpot Conversion Auditor"
+    },
+    "market_research": {
+      "low": 25,
+      "median": 38,
+      "high": 70,
+      "role": "Marketing Research Analyst"
+    },
+    "marketing_research": {
+      "low": 25,
+      "median": 38,
+      "high": 70,
+      "role": "Marketing Research Analyst"
+    },
+    "pursuit_research": {
+      "low": 25,
+      "median": 38,
+      "high": 70,
+      "role": "Marketing Research Analyst"
+    },
+    "rfq_evaluation": {
+      "low": 25,
+      "median": 38,
+      "high": 70,
+      "role": "Marketing Research Analyst"
+    },
+    "app_code": {
+      "low": 35,
+      "median": 65,
+      "high": 110,
+      "role": "Python Automation Engineer"
+    },
+    "automation_scripts": {
+      "low": 35,
+      "median": 65,
+      "high": 110,
+      "role": "Python Automation Engineer"
+    },
+    "internal_tool_build": {
+      "low": 45,
+      "median": 85,
+      "high": 140,
+      "role": "Internal Tool Full-Stack Builder"
+    },
+    "skill_code": {
+      "low": 45,
+      "median": 85,
+      "high": 140,
+      "role": "Internal Tool Full-Stack Builder"
+    },
+    "platform_integration": {
+      "low": 50,
+      "median": 90,
+      "high": 150,
+      "role": "API / Platform Integration Engineer"
+    },
+    "process_automation": {
+      "low": 25,
+      "median": 55,
+      "high": 95,
+      "role": "Workflow Automation Specialist"
+    },
+    "data_extraction": {
+      "low": 25,
+      "median": 55,
+      "high": 95,
+      "role": "Workflow Automation Specialist"
+    },
+    "task_management": {
+      "low": 18,
+      "median": 28,
+      "high": 55,
+      "role": "Task Coordination VA"
+    },
+    "bd_coord": {
+      "low": 18,
+      "median": 28,
+      "high": 55,
+      "role": "Task Coordination VA"
+    }
   }
 }
 };
@@ -1069,6 +1228,25 @@ const DASHBOARD_DATA = {
 const d = DASHBOARD_DATA;
 const ALL_ENTRIES = d.payload.entries;
 const TIMECARD_TOTALS = d.payload.timecard_totals || {};
+const RATES = d.payload.rates || {};
+function rateFor(e) {
+  const r = RATES[e.deliverable];
+  return r ? r : {low:0, median:0, high:0, role:''};
+}
+function dollarsSaved(e) {
+  if (!e.multiplier) return 0;
+  const r = rateFor(e);
+  return Math.round((e.equiv - e.actual) * r.median);
+}
+function dollarsValue(e) {
+  if (!e.multiplier) return 0;
+  const r = rateFor(e);
+  return Math.round(e.equiv * r.median);
+}
+function fmt$(n) {
+  if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'k';
+  return '$' + n;
+}
 
 // Range helpers
 function getMondayOfCurrentWeek() {
@@ -1114,8 +1292,10 @@ function render() {
 
   document.getElementById('lastUpdated').textContent = rangeLabel() + ' · updated ' + d.updated;
   document.getElementById('kpiMultiplier').textContent = (overallMult === '--' ? '--' : overallMult + 'x');
+  const totalDollarsSaved = entries.reduce((s,e) => s + dollarsSaved(e), 0);
+  const totalDollarsValue = entries.reduce((s,e) => s + dollarsValue(e), 0);
   document.getElementById('kpiSaved').textContent = (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
-  document.getElementById('kpiSavedSub').textContent = currentRange === 'week' ? 'this week' : 'cumulative';
+  document.getElementById('kpiSavedSub').textContent = `${fmt$(totalDollarsSaved)} at Utah Upwork rates`;
   document.getElementById('kpiActual').textContent = totalPosted.toFixed(1) + 'h';
   document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inRange(d, start)).length} days`;
   document.getElementById('kpiEquiv').textContent = pctAssisted + '%';
@@ -1236,13 +1416,19 @@ function renderTable(entries) {
   const scopeBadge = e.scope_change === 'yes'
     ? '<span title="Full-deliverable baseline applied — now doing end-to-end or net-new work" style="display:inline-block;margin-left:0.4rem;padding:0.1rem 0.4rem;border-radius:3px;font-size:0.6rem;font-weight:700;background:var(--accent-glow);color:var(--accent);vertical-align:middle">SCOPE↑</span>'
     : '';
+  const r = rateFor(e);
+  const savedUsd = dollarsSaved(e);
+  const roleCell = r.role
+    ? `<div style="font-size:0.75rem;color:var(--text)">${r.role}</div><div style="font-size:0.65rem;color:var(--muted);font-variant-numeric:tabular-nums">$${r.low}/$${r.median}/$${r.high} • Utah Upwork</div>`
+    : '<span style="color:#4a5578">—</span>';
   tbody.innerHTML += `<tr>
     <td style="white-space:nowrap;color:var(--muted)">${e.date}</td>
     <td class="entry-notes">${e.notes}${scopeBadge}</td>
     <td class="hours-cell" style="text-align:right">${e.actual}h</td>
     <td class="hours-cell hours-equiv" style="text-align:right">${e.equiv ? e.equiv + 'h' : '—'}</td>
+    <td class="hours-cell" style="text-align:right;color:var(--green)">${savedUsd ? fmt$(savedUsd) : '—'}</td>
     <td style="text-align:center">${mult}</td>
-    <td><span class="category-tag ${catClass}">${catLabel}</span></td>
+    <td>${roleCell}</td>
     <td>${evidence}</td>
   </tr>`;
   });
