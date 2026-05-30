@@ -36,7 +36,8 @@ with open('$CSV') as f:
             'deliverable': row.get('deliverable_type',''),
             'equiv': float(equiv) if equiv else None,
             'multiplier': float(mult) if mult else None,
-            'evidence': row.get('evidence_source','')
+            'evidence': row.get('evidence_source',''),
+            'scope_change': row.get('scope_change','no')
         })
 
 # Timecard daily totals (all jobcodes, all entries)
