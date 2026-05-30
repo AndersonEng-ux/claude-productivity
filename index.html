@@ -437,10 +437,16 @@
         <div class="subtitle">Anderson Psomas — AI Productivity Multiplier Tracker</div>
       </div>
     </div>
-    <div style="display:flex;gap:0.5rem;align-items:center">
+    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+      <select id="personSelect" style="padding:0.4rem 0.6rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--text);font-size:0.72rem;font-weight:600;cursor:pointer;font-family:inherit"></select>
       <div class="range-toggle" id="rangeToggle" style="display:flex;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;font-size:0.72rem">
         <button data-range="week" class="range-btn active" style="padding:0.4rem 0.8rem;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600">This Week</button>
         <button data-range="cumulative" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">Cumulative</button>
+      </div>
+      <div class="rate-toggle" id="rateTier" style="display:flex;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;font-size:0.72rem">
+        <button data-tier="low" class="tier-btn" style="padding:0.4rem 0.7rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600" title="Conservative — use the low end of Upwork rate ranges">Low</button>
+        <button data-tier="median" class="tier-btn active" style="padding:0.4rem 0.7rem;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600" title="Median — use the middle of Upwork rate ranges">Median</button>
+        <button data-tier="high" class="tier-btn" style="padding:0.4rem 0.7rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600" title="Aggressive — use the high end of Upwork rate ranges">High</button>
       </div>
       <span class="updated" id="lastUpdated"></span>
     </div>
@@ -1080,6 +1086,518 @@ const DASHBOARD_DATA = {
       "scope_change": "no"
     }
   ],
+  "people_entries": {
+    "brandon": [
+      {
+        "date": "2026-05-14",
+        "notes": "Project summary writeups — uranium project descriptions",
+        "actual": 5.0,
+        "category": "content_generation",
+        "claude_min": 180,
+        "deliverable": "project_descriptions",
+        "equiv": 12.0,
+        "multiplier": 2.4,
+        "evidence": "QB Time 2021-2024 env_descriptions (n=24): avg 3.56h, p75 8h; SMPS: 4-8h per project; Deltek: 6h technical writeup",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-15",
+        "notes": "AECOM Ambrosia Lake opportunity research and NDA prep",
+        "actual": 3.0,
+        "category": "content_generation",
+        "claude_min": 90,
+        "deliverable": "soq_nda_prep",
+        "equiv": 6.0,
+        "multiplier": 2.0,
+        "evidence": "QB Time 2021-2024 (n=9 SOQ): avg 3.83h; SMPS: 24h full SOQ; prep stage scaled",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-15",
+        "notes": "Environmental project write-ups — Bingham Creek, Barneys Canyon",
+        "actual": 0.5,
+        "category": "content_generation",
+        "claude_min": 30,
+        "deliverable": "env_descriptions",
+        "equiv": 8.0,
+        "multiplier": 16.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=24): avg 3.56h, p75 8h; SMPS: 4-8h per project description; Deltek: 6h technical writeup",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-16",
+        "notes": "Phleet coding, QB Time API integration",
+        "actual": 1.5,
+        "category": "automation_development",
+        "claude_min": 90,
+        "deliverable": "app_code",
+        "equiv": 16.0,
+        "multiplier": 10.7,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=8): avg 3.50h, p75 6h; GitHub/Microsoft: 55% faster with AI; Anthropic: 2x on SWE-bench",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-16",
+        "notes": "BD process development — job tracking workflow",
+        "actual": 1.0,
+        "category": "automation_development",
+        "claude_min": 60,
+        "deliverable": "automation_scripts",
+        "equiv": 12.0,
+        "multiplier": 12.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 app_code (n=8): avg 3.50h; GitHub/Microsoft: 55% faster; McKinsey: 25-50% dev productivity",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-18",
+        "notes": "Business development process development — task flow automation",
+        "actual": 1.75,
+        "category": "automation_development",
+        "claude_min": 105,
+        "deliverable": "automation_scripts",
+        "equiv": 12.0,
+        "multiplier": 6.9,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 app_code (n=8): avg 3.50h; GitHub/Microsoft: 55% faster; McKinsey: 25-50% dev productivity",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-18",
+        "notes": "AECOM EOI finalization and submission to Lindsay Thiess",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 60,
+        "deliverable": "eoi_document",
+        "equiv": 4.0,
+        "multiplier": 2.7,
+        "evidence": "QB Time 2021-2024 SOQ avg 3.83h proxy; SMPS: 8-12h EOI; PSMJ: 4-6h",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-18",
+        "notes": "AECOM EOI form, Ambrosia Lake briefing review",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 45,
+        "deliverable": "eoi_form",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 SOQ avg 3.83h proxy; SMPS: 8-12h EOI; form completion portion",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-19",
+        "notes": "Environmental portfolio writeup review — Bingham, Carr Fork, IS&R",
+        "actual": 2.0,
+        "category": "content_generation",
+        "claude_min": 120,
+        "deliverable": "env_descriptions",
+        "equiv": 8.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2021-2024 (n=24): avg 3.56h, p75 8h; SMPS: 4-8h per project description; Deltek: 6h technical writeup",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-19",
+        "notes": "Environmental SOQ coordination with GR, resumes and project descriptions",
+        "actual": 1.25,
+        "category": "content_generation",
+        "claude_min": 75,
+        "deliverable": "soq_document",
+        "equiv": 4.0,
+        "multiplier": 3.2,
+        "evidence": "QB Time 2021-2024 (n=9): avg 3.83h (Brandon's portion); SMPS: 24h full SOQ; PSMJ: 16-40h pursuit packages",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-19",
+        "notes": "Internal tool development — Mapbox, MCP integrations, AI platform research",
+        "actual": 1.0,
+        "category": "automation_development",
+        "claude_min": 60,
+        "deliverable": "platform_integration",
+        "equiv": 16.0,
+        "multiplier": 16.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=7): avg 4.14h, median 4h; GitHub/Microsoft: 55% faster with AI",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-20",
+        "notes": "Environmental SOQ coordination, Barneys Canyon photo extraction",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 90,
+        "deliverable": "soq_document",
+        "equiv": 5.0,
+        "multiplier": 3.3,
+        "evidence": "QB Time 2021-2024 (n=9): avg 3.83h (Brandon's portion); SMPS: 24h full SOQ; PSMJ: 16-40h pursuit packages",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-20",
+        "notes": "AECOM uranium SOQ prep, Ambrosia Lake folder review",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 60,
+        "deliverable": "soq_document",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=9): avg 3.83h (Brandon's portion); SMPS: 24h full SOQ; PSMJ: 16-40h pursuit packages",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-20",
+        "notes": "U3P Great Salt Lake Wetland RFQ evaluation, association research",
+        "actual": 0.5,
+        "category": "research_evaluation",
+        "claude_min": 30,
+        "deliverable": "rfq_evaluation",
+        "equiv": 2.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2021-2024 (n=12): avg 2.21h, p75 4h; PSMJ: 4-8h Go/No-Go evaluation; Harvard/BCG: 40% faster",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-20",
+        "notes": "Website portfolio selection, DOGM listing update",
+        "actual": 0.5,
+        "category": "content_generation",
+        "claude_min": 30,
+        "deliverable": "website_content",
+        "equiv": 1.5,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=125): avg 4.25h, median 4h, p75 7h; SMPS: 4-8h marketing content; MIT: 37% faster professional writing",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-21",
+        "notes": "Septic design landing page audit, HubSpot form review, conversion updates",
+        "actual": 1.5,
+        "category": "analysis_audit",
+        "claude_min": 60,
+        "deliverable": "landing_page_audit",
+        "equiv": 4.5,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=17): avg 5.06h, median 6h, p75 8h; SMPS: 8h marketing audits; Harvard/BCG: 40% faster analytical",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-21",
+        "notes": "AECOM uranium SOQ finalization, KC resume coordination, website writeup",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 75,
+        "deliverable": "soq_document",
+        "equiv": 5.0,
+        "multiplier": 3.3,
+        "evidence": "QB Time 2021-2024 (n=9): avg 3.83h (Brandon's portion); SMPS: 24h full SOQ; PSMJ: 16-40h pursuit packages",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-21",
+        "notes": "Internal tool development — Phleet inspection app, API integrations",
+        "actual": 1.0,
+        "category": "automation_development",
+        "claude_min": 80,
+        "deliverable": "app_code",
+        "equiv": 16.0,
+        "multiplier": 16.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=8): avg 3.50h, p75 6h; GitHub/Microsoft: 55% faster with AI; Anthropic: 2x on SWE-bench",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-21",
+        "notes": "BD outreach target list, association research, DOGM listing update",
+        "actual": 1.0,
+        "category": "research_evaluation",
+        "claude_min": 45,
+        "deliverable": "market_research",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=80): avg 2.63h, median 2h, p75 4h; Harvard/BCG: 40% faster analytical; McKinsey: 35% efficiency",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-21",
+        "notes": "Kevin Cosper master resume development and structure",
+        "actual": 4.0,
+        "category": "content_generation",
+        "claude_min": 155,
+        "deliverable": "resume_document",
+        "equiv": 20.0,
+        "multiplier": 5.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=7): avg 4.14h, p75 8h; SMPS: 16-24h AEC master resume; MIT: 37% faster professional writing",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-22",
+        "notes": "KC master resume, Claude coding production",
+        "actual": 3.5,
+        "category": "content_generation",
+        "claude_min": 140,
+        "deliverable": "resume_document",
+        "equiv": 20.0,
+        "multiplier": 5.7,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=7): avg 4.14h, p75 8h; SMPS: 16-24h AEC master resume; MIT: 37% faster professional writing",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-22",
+        "notes": "Environmental project descriptions — Bingham Creek, Barneys Canyon review",
+        "actual": 2.0,
+        "category": "content_generation",
+        "claude_min": 100,
+        "deliverable": "env_descriptions",
+        "equiv": 8.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2021-2024 (n=24): avg 3.56h, p75 8h; SMPS: 4-8h per project description; Deltek: 6h technical writeup",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-22",
+        "notes": "Internal BD process development, job tracking workflow",
+        "actual": 1.5,
+        "category": "automation_development",
+        "claude_min": 90,
+        "deliverable": "automation_scripts",
+        "equiv": 12.0,
+        "multiplier": 8.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 app_code (n=8): avg 3.50h; GitHub/Microsoft: 55% faster; McKinsey: 25-50% dev productivity",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-26",
+        "notes": "AP Editorial website development",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 45,
+        "deliverable": "website_content",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=125): avg 4.25h, median 4h, p75 7h; SMPS: 4-8h marketing content; MIT: 37% faster professional writing",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-26",
+        "notes": "Internal tool development — Phleet, design skills research, FileMaker",
+        "actual": 1.5,
+        "category": "automation_development",
+        "claude_min": 80,
+        "deliverable": "platform_integration",
+        "equiv": 16.0,
+        "multiplier": 10.7,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=7): avg 4.14h, median 4h; GitHub/Microsoft: 55% faster with AI",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-26",
+        "notes": "Environmental writeup review for JD, website portfolio selection",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 40,
+        "deliverable": "env_descriptions",
+        "equiv": 4.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2021-2024 (n=24): avg 3.56h, p75 8h; SMPS: 4-8h per project description; Deltek: 6h technical writeup",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-26",
+        "notes": "Septic campaign review, Google Ads enhanced conversions for RE",
+        "actual": 0.5,
+        "category": "analysis_audit",
+        "claude_min": 20,
+        "deliverable": "campaign_analysis",
+        "equiv": 1.5,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=4): avg 2.00h (surface review); Harvard/BCG: 40% faster analytical tasks",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-26",
+        "notes": "Project follow ups — Sandra Davis, Rick Tate, Jaden Bond, Gold Springs",
+        "actual": 2.0,
+        "category": "coordination_routing",
+        "claude_min": 25,
+        "deliverable": "task_management",
+        "equiv": 4.0,
+        "multiplier": 2.0,
+        "evidence": "QB Time 2021-2024 (n=140): avg 1.78h, median 1h; NBER: 14% support productivity gain",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-27",
+        "notes": "Phleet website dev, testing new processes and routines",
+        "actual": 2.0,
+        "category": "automation_development",
+        "claude_min": 150,
+        "deliverable": "internal_tool_build",
+        "equiv": 16.0,
+        "multiplier": 8.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=14): avg 2.75h, p75 4h; full-stack build scaled; GitHub/Microsoft: 55% faster; Anthropic: 2x on SWE-bench",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-27",
+        "notes": "Environmental SOQ review, project descriptions — Bingham Creek, Barneys Canyon",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 60,
+        "deliverable": "project_description_writeup",
+        "equiv": 6.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2021-2024 (n=24): avg 3.56h, p75 8h; SMPS: 4-8h per project description; Deltek: 6h technical writeup",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-27",
+        "notes": "BD pipeline coordination, pursuit research, inbound lead review",
+        "actual": 1.0,
+        "category": "research_evaluation",
+        "claude_min": 40,
+        "deliverable": "market_research",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=80): avg 2.63h, median 2h, p75 4h; Harvard/BCG: 40% faster analytical; McKinsey: 35% efficiency",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-27",
+        "notes": "AP Editorial website updates, blocklist check, email deliverability test",
+        "actual": 1.0,
+        "category": "content_generation",
+        "claude_min": 45,
+        "deliverable": "website_content",
+        "equiv": 3.0,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=125): avg 4.25h, median 4h, p75 7h; SMPS: 4-8h marketing content; MIT: 37% faster professional writing",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-28",
+        "notes": "Internal tool development — Phleet, resume-writer skill, design research",
+        "actual": 2.5,
+        "category": "automation_development",
+        "claude_min": 180,
+        "deliverable": "internal_tool_build",
+        "equiv": 16.0,
+        "multiplier": 6.4,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=14): avg 2.75h, p75 4h; full-stack build scaled; GitHub/Microsoft: 55% faster; Anthropic: 2x on SWE-bench",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-28",
+        "notes": "BD coordination — Arseniy reschedule, portfolio review, Google Ads for RE",
+        "actual": 1.5,
+        "category": "coordination_routing",
+        "claude_min": 40,
+        "deliverable": "task_management",
+        "equiv": 3.0,
+        "multiplier": 2.0,
+        "evidence": "QB Time 2021-2024 (n=140): avg 1.78h, median 1h; NBER: 14% support productivity gain",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-28",
+        "notes": "Survey lead forwarding fix, Psomas account and call screening",
+        "actual": 0.5,
+        "category": "automation_development",
+        "claude_min": 20,
+        "deliverable": "process_automation",
+        "equiv": 8.0,
+        "multiplier": 16.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 internal_tool_build (n=14): avg 2.75h; GitHub/Microsoft: 55% faster scripting",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-28",
+        "notes": "FileMaker photo extraction for Barneys Canyon",
+        "actual": 0.5,
+        "category": "automation_development",
+        "claude_min": 15,
+        "deliverable": "data_extraction",
+        "equiv": 6.0,
+        "multiplier": 12.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 internal_tool_build (n=14): avg 2.75h proxy; GitHub/Microsoft: 55% faster scripting; Harvard/BCG: 40% faster analytical",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-29",
+        "notes": "Master resume development — RE, JD",
+        "actual": 1.5,
+        "category": "content_generation",
+        "claude_min": 80,
+        "deliverable": "resume_document",
+        "equiv": 20.0,
+        "multiplier": 13.3,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=7): avg 4.14h, p75 8h; SMPS: 16-24h AEC master resume; MIT: 37% faster professional writing",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-29",
+        "notes": "Septic Tank Campaign forensic analysis — Google Ads, Nimbata, Retarget IQ, conversion tracking",
+        "actual": 8.0,
+        "category": "analysis_audit",
+        "claude_min": 300,
+        "deliverable": "campaign_forensic_audit",
+        "equiv": 32.0,
+        "multiplier": 4.0,
+        "evidence": "QB Time 2021-2024 landing_page_audit (n=17): avg 5.06h surface; HubSpot/Google Premier Partner: 24-40h multi-platform PPC forensic; consultant SOW tier",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-29",
+        "notes": "Internal tool development — UX audit skill, design research",
+        "actual": 2.0,
+        "category": "automation_development",
+        "claude_min": 120,
+        "deliverable": "internal_tool_build",
+        "equiv": 16.0,
+        "multiplier": 8.0,
+        "evidence": "[SCOPE: full-deliverable baseline used — historically partial role] QB Time 2021-2024 (n=14): avg 2.75h, p75 4h; full-stack build scaled; GitHub/Microsoft: 55% faster; Anthropic: 2x on SWE-bench",
+        "scope_change": "yes"
+      },
+      {
+        "date": "2026-05-29",
+        "notes": "BD coordination — DOGM listing, lead routing, pipeline review",
+        "actual": 1.5,
+        "category": "coordination_routing",
+        "claude_min": 40,
+        "deliverable": "task_management",
+        "equiv": 3.0,
+        "multiplier": 2.0,
+        "evidence": "QB Time 2021-2024 (n=140): avg 1.78h, median 1h; NBER: 14% support productivity gain",
+        "scope_change": "no"
+      },
+      {
+        "date": "2026-05-29",
+        "notes": "Pursuit research, pipeline development, BD updates",
+        "actual": 1.5,
+        "category": "research_evaluation",
+        "claude_min": 45,
+        "deliverable": "market_research",
+        "equiv": 4.5,
+        "multiplier": 3.0,
+        "evidence": "QB Time 2021-2024 (n=80): avg 2.63h, median 2h, p75 4h; Harvard/BCG: 40% faster analytical; McKinsey: 35% efficiency",
+        "scope_change": "no"
+      }
+    ]
+  },
+  "people": {
+    "brandon": {
+      "display_name": "Brandon Anderson",
+      "role": "Engineering Principal / BD",
+      "base_rate": 55.0,
+      "overhead_multiplier": 1.33,
+      "loaded_rate": 73.15,
+      "data_file": "claude-productivity.csv"
+    }
+  },
+  "comparison": {
+    "internal_aec_hire_rate": 140,
+    "internal_rate_source": "PSMJ Resources 2024 AEC Compensation Survey + Deltek Clarity Report: mid-senior staff loaded billing rate (base $45-55/h × 2.5-3.0x AEC overhead). Standard for engineer/marketing/proposal staff at firms 100-500 employees.",
+    "agency_multiplier_over_upwork": 2.5,
+    "agency_source": "AEC consulting firms / marketing agencies typically bill 2.5x freelancer median to cover agency overhead, account management, multi-person delivery teams (SMPS pricing benchmark)."
+  },
   "timecard_totals": {
     "2026-05-15": 1.0,
     "2026-05-16": 4.5,
@@ -1255,18 +1773,30 @@ const DASHBOARD_DATA = {
 
 // ── RENDER ──
 const d = DASHBOARD_DATA;
-const ALL_ENTRIES = d.payload.entries;
+const PEOPLE_ENTRIES = d.payload.people_entries || {brandon: d.payload.entries};
+const PEOPLE = d.payload.people || {brandon: {display_name: 'Brandon Anderson', role: 'Engineering Principal / BD', loaded_rate: 73.15}};
 const TIMECARD_TOTALS = d.payload.timecard_totals || {};
 const RATES = d.payload.rates || {};
-const BRANDON_RATE = 73.15;        // $55 base × 1.33 firm overhead
-const INTERNAL_AEC_RATE = 140;     // AEC staff loaded billing (PSMJ/Deltek 2024)
-const AGENCY_MULT = 2.5;           // consulting firm tier vs freelancer
+const COMP = d.payload.comparison || {internal_aec_hire_rate: 140, agency_multiplier_over_upwork: 2.5};
+const INTERNAL_AEC_RATE = COMP.internal_aec_hire_rate || 140;
+const AGENCY_MULT = COMP.agency_multiplier_over_upwork || 2.5;
+
+let currentPerson = 'brandon';
+let currentTier = 'median';   // 'low' | 'median' | 'high'
+let ALL_ENTRIES = PEOPLE_ENTRIES[currentPerson] || [];
+
+function loadedRate() {
+  return (PEOPLE[currentPerson] || {}).loaded_rate || 73.15;
+}
 function rateFor(e) {
   const r = RATES[e.deliverable];
   return r ? r : {low:0, median:0, high:0, role:''};
 }
+function tierRate(e) {
+  return rateFor(e)[currentTier] || 0;
+}
 function brandonCost(e) {
-  return Math.round(e.actual * BRANDON_RATE);
+  return Math.round(e.actual * loadedRate());
 }
 function internalCost(e) {
   if (!e.multiplier) return 0;
@@ -1274,14 +1804,13 @@ function internalCost(e) {
 }
 function upworkCost(e) {
   if (!e.multiplier) return 0;
-  return Math.round(e.equiv * rateFor(e).median);
+  return Math.round(e.equiv * tierRate(e));
 }
 function agencyCost(e) {
   if (!e.multiplier) return 0;
-  return Math.round(e.equiv * rateFor(e).median * AGENCY_MULT);
+  return Math.round(e.equiv * tierRate(e) * AGENCY_MULT);
 }
 function dollarsSaved(e) {
-  // savings vs Upwork median (conservative)
   return upworkCost(e) - brandonCost(e);
 }
 function fmt$(n) {
@@ -1340,7 +1869,11 @@ function render() {
   const totalAgencyCost = entries.reduce((s,e) => s + agencyCost(e), 0);
   const prodRatio = totalBrandonCost > 0 ? (totalUpworkCost / totalBrandonCost).toFixed(1) : '--';
 
+  const person = PEOPLE[currentPerson] || {};
   document.getElementById('kpiBrandonCost').textContent = fmt$(totalBrandonCost);
+  document.querySelector('#kpiBrandonCost').previousElementSibling.textContent = `${person.display_name || 'Cost'} — Loaded Cost`;
+  const subEl = document.getElementById('kpiBrandonCost').nextElementSibling;
+  if (subEl) subEl.textContent = `actual hours × $${loadedRate().toFixed(2)} loaded (${person.role || 'this person'})`;
   document.getElementById('kpiInternalCost').textContent = fmt$(totalInternalCost);
   document.getElementById('kpiUpworkCost').textContent = fmt$(totalUpworkCost);
   document.getElementById('kpiAgencyCost').textContent = fmt$(totalAgencyCost);
@@ -1501,6 +2034,37 @@ document.querySelectorAll('.range-btn').forEach(btn => {
     currentRange = btn.dataset.range;
     render();
   });
+});
+
+// Rate tier toggle (Low / Median / High)
+document.querySelectorAll('.tier-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tier-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.background = 'transparent';
+      b.style.color = 'var(--text)';
+    });
+    btn.classList.add('active');
+    btn.style.background = 'var(--accent)';
+    btn.style.color = 'white';
+    currentTier = btn.dataset.tier;
+    render();
+  });
+});
+
+// Person selector
+const personSel = document.getElementById('personSelect');
+Object.entries(PEOPLE).forEach(([pid, info]) => {
+  const opt = document.createElement('option');
+  opt.value = pid;
+  opt.textContent = `${info.display_name} — $${(info.loaded_rate||0).toFixed(2)}/h`;
+  personSel.appendChild(opt);
+});
+personSel.value = currentPerson;
+personSel.addEventListener('change', () => {
+  currentPerson = personSel.value;
+  ALL_ENTRIES = PEOPLE_ENTRIES[currentPerson] || [];
+  render();
 });
 
 render();

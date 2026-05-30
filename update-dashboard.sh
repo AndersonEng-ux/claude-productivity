@@ -61,16 +61,51 @@ except FileNotFoundError:
 
 timecard_totals = {d: round(h, 2) for d, h in sorted(by_date.items())}
 
-# Utah Upwork rates
-rates = {}
+# Utah Upwork rates + people config
+rates = {}; people = {}; comparison = {}
 try:
     with open('$RATES') as f:
         rates_doc = json.load(f)
         rates = rates_doc.get('rates_by_deliverable', {})
+        people = {k:v for k,v in rates_doc.get('people', {}).items() if not k.startswith('_')}
+        comparison = rates_doc.get('comparison_rates', {})
 except FileNotFoundError:
     pass
 
-print(json.dumps({'entries': entries, 'timecard_totals': timecard_totals, 'rates': rates}, indent=2))
+# Load per-person entries (default: only brandon's data)
+people_entries = {'brandon': entries}
+import os
+for pid, pinfo in people.items():
+    if pid == 'brandon': continue
+    pcsv = os.path.expanduser(f\"~/drewos/timecard/{pinfo.get('data_file','')}\")
+    if os.path.exists(pcsv):
+        with open(pcsv) as f:
+            rd = csv.DictReader(f)
+            ents = []
+            for row in rd:
+                mult = row.get('multiplier','').replace('x','').strip()
+                equiv = row.get('human_equiv_hours','').strip()
+                ents.append({
+                    'date': row['date'], 'notes': row['entry_notes'],
+                    'actual': float(row['actual_hours']),
+                    'category': row['category'],
+                    'claude_min': int(row['claude_minutes_aw']) if row.get('claude_minutes_aw','').strip() else 0,
+                    'deliverable': row.get('deliverable_type',''),
+                    'equiv': float(equiv) if equiv else None,
+                    'multiplier': float(mult) if mult else None,
+                    'evidence': row.get('evidence_source',''),
+                    'scope_change': row.get('scope_change','no'),
+                })
+            people_entries[pid] = ents
+
+print(json.dumps({
+    'entries': entries,
+    'people_entries': people_entries,
+    'people': people,
+    'comparison': comparison,
+    'timecard_totals': timecard_totals,
+    'rates': rates
+}, indent=2))
 ")
 
 # Replace DASHBOARD_DATA block in HTML
