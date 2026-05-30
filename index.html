@@ -1901,7 +1901,6 @@ function render() {
   const intSub = document.getElementById('kpiInternalCostSub');
   if (intSub) intSub.textContent = `your hours @ $${loadedRate().toFixed(2)} + delta @ $${INTERNAL_AEC_RATE.toFixed(2)} Mktg Coord`;
   document.getElementById('kpiUpworkCost').textContent = fmt$(totalUpworkCost);
-  document.getElementById('kpiAgencyCost').textContent = fmt$(totalAgencyCost);
   document.getElementById('kpiProdRatio').textContent = (prodRatio === '--' ? '--' : prodRatio + 'x');
   document.getElementById('kpiProdRatioSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} value over cost (vs Upwork)`;
 
