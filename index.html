@@ -499,9 +499,9 @@
       <div class="sub">equiv hours × Utah Upwork median</div>
     </div>
     <div class="kpi">
-      <div class="label">Consulting Firm Cost</div>
+      <div class="label">Solo Consultant Cost</div>
       <div class="value" style="color:#8b1a0d" id="kpiAgencyCost">--</div>
-      <div class="sub">equiv hours × 2.5x Upwork (agency tier)</div>
+      <div class="sub" id="kpiAgencyCostSub">equiv hours × 1.5x Upwork (solo US, home office)</div>
     </div>
     <div class="kpi">
       <div class="label">Productivity Ratio</div>
@@ -1780,7 +1780,7 @@ const TIMECARD_TOTALS = d.payload.timecard_totals || {};
 const RATES = d.payload.rates || {};
 const COMP = d.payload.comparison || {internal_aec_hire_rate: 140, agency_multiplier_over_upwork: 2.5};
 const INTERNAL_AEC_RATE = COMP.internal_aec_hire_rate || 51.15;
-const AGENCY_MULT = COMP.agency_multiplier_over_upwork || 2.5;
+const AGENCY_MULT = COMP.agency_multiplier_over_upwork || 1.5;
 
 let currentPerson = 'brandon';
 let currentTier = 'median';   // 'low' | 'median' | 'high'
