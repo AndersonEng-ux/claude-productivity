@@ -467,9 +467,9 @@
       <div class="sub">human-equivalent / actual hours</div>
     </div>
     <div class="kpi">
-      <div class="label">Hours Saved</div>
+      <div class="label">Output Created</div>
       <div class="value green" id="kpiSaved">--</div>
-      <div class="sub" id="kpiSavedSub">in range</div>
+      <div class="sub" id="kpiSavedSub">additional equiv-hours beyond your actual time</div>
     </div>
     <div class="kpi">
       <div class="label">Total Hours Posted</div>
@@ -1909,8 +1909,8 @@ function render() {
   document.getElementById('kpiProdRatio').textContent = (prodRatio === '--' ? '--' : prodRatio + 'x');
   document.getElementById('kpiProdRatioSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} value over cost (vs Upwork)`;
 
-  document.getElementById('kpiSaved').textContent = (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
-  document.getElementById('kpiSavedSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} net value at Utah Upwork`;
+  document.getElementById('kpiSaved').textContent = '+' + (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
+  document.getElementById('kpiSavedSub').textContent = `additional output worth ${fmt$(totalUpworkCost - totalBrandonCost)} (Upwork median)`;
   document.getElementById('kpiActual').textContent = totalPosted.toFixed(1) + 'h';
   document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inBounds(d)).length} days`;
   document.getElementById('kpiEquiv').textContent = pctAssisted + '%';
