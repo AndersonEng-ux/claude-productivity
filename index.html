@@ -475,6 +475,35 @@
     </div>
   </div>
 
+  <div class="section-title">Cost Comparison — What This Work Actually Costs</div>
+  <div class="kpi-hero" style="margin-bottom:2rem">
+    <div class="kpi hero" style="border-top-color:var(--green)">
+      <div class="label">Your Cost</div>
+      <div class="value green" id="kpiBrandonCost">--</div>
+      <div class="sub" id="kpiBrandonCostSub">actual hours × $73.15 loaded ($55 × 1.33)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Internal Hire Cost</div>
+      <div class="value amber" id="kpiInternalCost">--</div>
+      <div class="sub">equiv hours × $140 AEC staff rate (PSMJ)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Upwork Freelancer Cost</div>
+      <div class="value amber" id="kpiUpworkCost">--</div>
+      <div class="sub">equiv hours × Utah Upwork median</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Consulting Firm Cost</div>
+      <div class="value" style="color:#8b1a0d" id="kpiAgencyCost">--</div>
+      <div class="sub">equiv hours × 2.5x Upwork (agency tier)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Productivity Ratio</div>
+      <div class="value accent" id="kpiProdRatio">--</div>
+      <div class="sub" id="kpiProdRatioSub">$ value created / $ you cost</div>
+    </div>
+  </div>
+
   <div class="section-title">Performance Breakdown</div>
   <div class="charts">
     <div class="chart-card">
@@ -1229,23 +1258,35 @@ const d = DASHBOARD_DATA;
 const ALL_ENTRIES = d.payload.entries;
 const TIMECARD_TOTALS = d.payload.timecard_totals || {};
 const RATES = d.payload.rates || {};
+const BRANDON_RATE = 73.15;        // $55 base × 1.33 firm overhead
+const INTERNAL_AEC_RATE = 140;     // AEC staff loaded billing (PSMJ/Deltek 2024)
+const AGENCY_MULT = 2.5;           // consulting firm tier vs freelancer
 function rateFor(e) {
   const r = RATES[e.deliverable];
   return r ? r : {low:0, median:0, high:0, role:''};
 }
-function dollarsSaved(e) {
-  if (!e.multiplier) return 0;
-  const r = rateFor(e);
-  return Math.round((e.equiv - e.actual) * r.median);
+function brandonCost(e) {
+  return Math.round(e.actual * BRANDON_RATE);
 }
-function dollarsValue(e) {
+function internalCost(e) {
   if (!e.multiplier) return 0;
-  const r = rateFor(e);
-  return Math.round(e.equiv * r.median);
+  return Math.round(e.equiv * INTERNAL_AEC_RATE);
+}
+function upworkCost(e) {
+  if (!e.multiplier) return 0;
+  return Math.round(e.equiv * rateFor(e).median);
+}
+function agencyCost(e) {
+  if (!e.multiplier) return 0;
+  return Math.round(e.equiv * rateFor(e).median * AGENCY_MULT);
+}
+function dollarsSaved(e) {
+  // savings vs Upwork median (conservative)
+  return upworkCost(e) - brandonCost(e);
 }
 function fmt$(n) {
-  if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'k';
-  return '$' + n;
+  if (Math.abs(n) >= 1000) return '$' + (n/1000).toFixed(1) + 'k';
+  return '$' + Math.round(n);
 }
 
 // Range helpers
@@ -1292,10 +1333,22 @@ function render() {
 
   document.getElementById('lastUpdated').textContent = rangeLabel() + ' · updated ' + d.updated;
   document.getElementById('kpiMultiplier').textContent = (overallMult === '--' ? '--' : overallMult + 'x');
-  const totalDollarsSaved = entries.reduce((s,e) => s + dollarsSaved(e), 0);
-  const totalDollarsValue = entries.reduce((s,e) => s + dollarsValue(e), 0);
+  // Cost comparison
+  const totalBrandonCost = entries.reduce((s,e) => s + brandonCost(e), 0);
+  const totalInternalCost = entries.reduce((s,e) => s + internalCost(e), 0);
+  const totalUpworkCost = entries.reduce((s,e) => s + upworkCost(e), 0);
+  const totalAgencyCost = entries.reduce((s,e) => s + agencyCost(e), 0);
+  const prodRatio = totalBrandonCost > 0 ? (totalUpworkCost / totalBrandonCost).toFixed(1) : '--';
+
+  document.getElementById('kpiBrandonCost').textContent = fmt$(totalBrandonCost);
+  document.getElementById('kpiInternalCost').textContent = fmt$(totalInternalCost);
+  document.getElementById('kpiUpworkCost').textContent = fmt$(totalUpworkCost);
+  document.getElementById('kpiAgencyCost').textContent = fmt$(totalAgencyCost);
+  document.getElementById('kpiProdRatio').textContent = (prodRatio === '--' ? '--' : prodRatio + 'x');
+  document.getElementById('kpiProdRatioSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} value over cost (vs Upwork)`;
+
   document.getElementById('kpiSaved').textContent = (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
-  document.getElementById('kpiSavedSub').textContent = `${fmt$(totalDollarsSaved)} at Utah Upwork rates`;
+  document.getElementById('kpiSavedSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} net value at Utah Upwork`;
   document.getElementById('kpiActual').textContent = totalPosted.toFixed(1) + 'h';
   document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inRange(d, start)).length} days`;
   document.getElementById('kpiEquiv').textContent = pctAssisted + '%';
