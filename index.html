@@ -1233,9 +1233,12 @@ function renderTable(entries) {
   const evidence = e.evidence
     ? `<span class="evidence-text">${e.evidence}</span>`
     : '<span style="color:#4a5578">—</span>';
+  const scopeBadge = e.scope_change === 'yes'
+    ? '<span title="Full-deliverable baseline applied — now doing end-to-end or net-new work" style="display:inline-block;margin-left:0.4rem;padding:0.1rem 0.4rem;border-radius:3px;font-size:0.6rem;font-weight:700;background:var(--accent-glow);color:var(--accent);vertical-align:middle">SCOPE↑</span>'
+    : '';
   tbody.innerHTML += `<tr>
     <td style="white-space:nowrap;color:var(--muted)">${e.date}</td>
-    <td class="entry-notes">${e.notes}</td>
+    <td class="entry-notes">${e.notes}${scopeBadge}</td>
     <td class="hours-cell" style="text-align:right">${e.actual}h</td>
     <td class="hours-cell hours-equiv" style="text-align:right">${e.equiv ? e.equiv + 'h' : '—'}</td>
     <td style="text-align:center">${mult}</td>
