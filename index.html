@@ -491,7 +491,7 @@
     <div class="kpi">
       <div class="label">Internal Hire Cost</div>
       <div class="value amber" id="kpiInternalCost">--</div>
-      <div class="sub">equiv hours × $140 AEC staff rate (PSMJ)</div>
+      <div class="sub" id="kpiInternalCostSub">equiv hours × marketing coordinator loaded</div>
     </div>
     <div class="kpi">
       <div class="label">Upwork Freelancer Cost</div>
@@ -1779,7 +1779,7 @@ const PEOPLE = d.payload.people || {brandon: {display_name: 'Brandon Anderson', 
 const TIMECARD_TOTALS = d.payload.timecard_totals || {};
 const RATES = d.payload.rates || {};
 const COMP = d.payload.comparison || {internal_aec_hire_rate: 140, agency_multiplier_over_upwork: 2.5};
-const INTERNAL_AEC_RATE = COMP.internal_aec_hire_rate || 140;
+const INTERNAL_AEC_RATE = COMP.internal_aec_hire_rate || 51.15;
 const AGENCY_MULT = COMP.agency_multiplier_over_upwork || 2.5;
 
 let currentPerson = 'brandon';
@@ -1876,6 +1876,8 @@ function render() {
   const subEl = document.getElementById('kpiBrandonCost').nextElementSibling;
   if (subEl) subEl.textContent = `actual hours × $${loadedRate().toFixed(2)} loaded (${person.role || 'this person'})`;
   document.getElementById('kpiInternalCost').textContent = fmt$(totalInternalCost);
+  const intSub = document.getElementById('kpiInternalCostSub');
+  if (intSub) intSub.textContent = `equiv hours × $${INTERNAL_AEC_RATE.toFixed(2)} (Mktg Coord, $80k loaded)`;
   document.getElementById('kpiUpworkCost').textContent = fmt$(totalUpworkCost);
   document.getElementById('kpiAgencyCost').textContent = fmt$(totalAgencyCost);
   document.getElementById('kpiProdRatio').textContent = (prodRatio === '--' ? '--' : prodRatio + 'x');
