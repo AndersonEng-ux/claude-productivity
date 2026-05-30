@@ -1801,7 +1801,10 @@ function brandonCost(e) {
 }
 function internalCost(e) {
   if (!e.multiplier) return 0;
-  return Math.round(e.equiv * INTERNAL_AEC_RATE);
+  // You'd still work your actual hours; the coordinator absorbs only the delta
+  const yours = e.actual * loadedRate();
+  const coord = Math.max(0, e.equiv - e.actual) * INTERNAL_AEC_RATE;
+  return Math.round(yours + coord);
 }
 function upworkCost(e) {
   if (!e.multiplier) return 0;
@@ -1877,7 +1880,7 @@ function render() {
   if (subEl) subEl.textContent = `actual hours × $${loadedRate().toFixed(2)} loaded (${person.role || 'this person'})`;
   document.getElementById('kpiInternalCost').textContent = fmt$(totalInternalCost);
   const intSub = document.getElementById('kpiInternalCostSub');
-  if (intSub) intSub.textContent = `equiv hours × $${INTERNAL_AEC_RATE.toFixed(2)} (Mktg Coord, $80k loaded)`;
+  if (intSub) intSub.textContent = `your hours @ $${loadedRate().toFixed(2)} + delta @ $${INTERNAL_AEC_RATE.toFixed(2)} Mktg Coord`;
   document.getElementById('kpiUpworkCost').textContent = fmt$(totalUpworkCost);
   document.getElementById('kpiAgencyCost').textContent = fmt$(totalAgencyCost);
   document.getElementById('kpiProdRatio').textContent = (prodRatio === '--' ? '--' : prodRatio + 'x');
