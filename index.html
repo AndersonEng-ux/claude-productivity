@@ -441,7 +441,14 @@
       <select id="personSelect" style="padding:0.4rem 0.6rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--text);font-size:0.72rem;font-weight:600;cursor:pointer;font-family:inherit"></select>
       <div class="range-toggle" id="rangeToggle" style="display:flex;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;font-size:0.72rem">
         <button data-range="week" class="range-btn active" style="padding:0.4rem 0.8rem;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600">This Week</button>
+        <button data-range="month" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">This Month</button>
         <button data-range="cumulative" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">Cumulative</button>
+        <button data-range="custom" class="range-btn" style="padding:0.4rem 0.8rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600">Custom</button>
+      </div>
+      <div id="customRangeInputs" style="display:none;gap:0.25rem;align-items:center;font-size:0.7rem;color:var(--muted)">
+        <input type="date" id="customFrom" style="padding:0.35rem 0.4rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--text);font-size:0.7rem;font-family:inherit">
+        <span>→</span>
+        <input type="date" id="customTo" style="padding:0.35rem 0.4rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--text);font-size:0.7rem;font-family:inherit">
       </div>
       <div class="rate-toggle" id="rateTier" style="display:flex;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;font-size:0.72rem">
         <button data-tier="low" class="tier-btn" style="padding:0.4rem 0.7rem;border:none;background:transparent;color:var(--text);cursor:pointer;font-weight:600" title="Conservative — use the low end of Upwork rate ranges">Low</button>
@@ -1837,25 +1844,41 @@ function inRange(dateStr, startStr) {
 }
 
 let currentRange = 'week';
-function rangeStart() {
-  return currentRange === 'week' ? getMondayOfCurrentWeek() : null;
+let customFrom = null;
+let customTo = null;
+
+function firstOfMonth() {
+  const t = new Date();
+  return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0,10);
+}
+function rangeBounds() {
+  // returns [startStr|null, endStr|null]
+  if (currentRange === 'week') return [getMondayOfCurrentWeek(), null];
+  if (currentRange === 'month') return [firstOfMonth(), null];
+  if (currentRange === 'custom') return [customFrom || null, customTo || null];
+  return [null, null];  // cumulative
+}
+function inBounds(dateStr) {
+  const [s, e] = rangeBounds();
+  if (s && dateStr < s) return false;
+  if (e && dateStr > e) return false;
+  return true;
 }
 function rangeLabel() {
-  if (currentRange === 'week') {
-    const start = getMondayOfCurrentWeek();
-    return `Week of ${start}`;
-  }
+  const [s, e] = rangeBounds();
+  if (currentRange === 'week') return `Week of ${s}`;
+  if (currentRange === 'month') return `Month of ${s.slice(0,7)}`;
+  if (currentRange === 'custom') return `${s || 'start'} → ${e || 'today'}`;
   return 'Cumulative since 2026-05-14';
 }
 
 function render() {
-  const start = rangeStart();
-  const entries = ALL_ENTRIES.filter(e => inRange(e.date, start));
+  const entries = ALL_ENTRIES.filter(e => inBounds(e.date));
   const withMultiplier = entries.filter(e => e.multiplier);
 
   // Total posted hours from timecard (all jobcodes, all entries — not just Claude-assisted)
   const totalPosted = Object.entries(TIMECARD_TOTALS)
-    .filter(([d]) => inRange(d, start))
+    .filter(([d]) => inBounds(d))
     .reduce((s, [,h]) => s + h, 0);
 
   const claudeAssistedHours = entries.reduce((s,e) => s + e.actual, 0);
@@ -1889,7 +1912,7 @@ function render() {
   document.getElementById('kpiSaved').textContent = (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
   document.getElementById('kpiSavedSub').textContent = `${fmt$(totalUpworkCost - totalBrandonCost)} net value at Utah Upwork`;
   document.getElementById('kpiActual').textContent = totalPosted.toFixed(1) + 'h';
-  document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inRange(d, start)).length} days`;
+  document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inBounds(d)).length} days`;
   document.getElementById('kpiEquiv').textContent = pctAssisted + '%';
   document.getElementById('kpiEquivSub').textContent = `${claudeAssistedHours.toFixed(1)}h of ${totalPosted.toFixed(1)}h posted`;
   document.getElementById('kpiEntries').textContent = entries.length;
@@ -2038,9 +2061,21 @@ document.querySelectorAll('.range-btn').forEach(btn => {
     btn.style.background = 'var(--accent)';
     btn.style.color = 'white';
     currentRange = btn.dataset.range;
+    document.getElementById('customRangeInputs').style.display = (currentRange === 'custom') ? 'flex' : 'none';
+    if (currentRange === 'custom' && !customFrom && !customTo) {
+      // Seed with earliest and latest entry dates
+      const dates = ALL_ENTRIES.map(e => e.date).sort();
+      if (dates.length) {
+        customFrom = dates[0]; customTo = dates[dates.length-1];
+        document.getElementById('customFrom').value = customFrom;
+        document.getElementById('customTo').value = customTo;
+      }
+    }
     render();
   });
 });
+document.getElementById('customFrom').addEventListener('change', e => { customFrom = e.target.value || null; render(); });
+document.getElementById('customTo').addEventListener('change', e => { customTo = e.target.value || null; render(); });
 
 // Rate tier toggle (Low / Median / High)
 document.querySelectorAll('.tier-btn').forEach(btn => {
