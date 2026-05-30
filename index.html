@@ -472,9 +472,10 @@
       <div class="sub" id="kpiSavedSub">additional equiv-hours beyond your actual time</div>
     </div>
     <div class="kpi">
-      <div class="label">Total Hours Posted</div>
+      <div class="label">Hours Breakdown</div>
       <div class="value" id="kpiActual">--</div>
-      <div class="sub" id="kpiActualSub">QB Time, all jobcodes</div>
+      <div class="sub" id="kpiActualSub" style="line-height:1.5">QB Time posted</div>
+      <div style="margin-top:0.4rem;font-size:0.7rem;color:var(--text-secondary);line-height:1.45;font-variant-numeric:tabular-nums" id="kpiActualDetail"></div>
     </div>
     <div class="kpi">
       <div class="label">Claude-Assisted</div>
@@ -1906,8 +1907,14 @@ function render() {
 
   document.getElementById('kpiSaved').textContent = '+' + (totalEquiv - totalActualWithMult).toFixed(1) + 'h';
   document.getElementById('kpiSavedSub').textContent = `additional equiv-hours of professional output`;
+  const claudeSessionMin = entries.reduce((s,e) => s + (e.claude_min || 0), 0);
+  const claudeSessionHrs = claudeSessionMin / 60;
+  const daysInRange = Object.keys(TIMECARD_TOTALS).filter(d => inBounds(d)).length;
   document.getElementById('kpiActual').textContent = totalPosted.toFixed(1) + 'h';
-  document.getElementById('kpiActualSub').textContent = `QB Time · ${Object.keys(TIMECARD_TOTALS).filter(d => inBounds(d)).length} days`;
+  document.getElementById('kpiActualSub').textContent = `QB Time posted · ${daysInRange} day${daysInRange===1?'':'s'}`;
+  document.getElementById('kpiActualDetail').innerHTML =
+    `<div>${claudeAssistedHours.toFixed(1)}h&nbsp;&nbsp;<span style="color:var(--muted)">Claude-assisted (tracked entries)</span></div>` +
+    `<div>${claudeSessionHrs.toFixed(1)}h&nbsp;&nbsp;<span style="color:var(--muted)">Claude session time (AW)</span></div>`;
   document.getElementById('kpiEquiv').textContent = pctAssisted + '%';
   document.getElementById('kpiEquivSub').textContent = `${claudeAssistedHours.toFixed(1)}h of ${totalPosted.toFixed(1)}h posted`;
   document.getElementById('kpiEntries').textContent = entries.length;
